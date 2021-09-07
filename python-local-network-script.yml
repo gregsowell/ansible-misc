@@ -7,7 +7,8 @@
   tasks:
   - name: run python script against hosts
     delegate_to: localhost
-    script: "/var/lib/awx/projects/general/python-local-network-script.py {{ inventory_hostname }}"
+#    script: "/var/lib/awx/projects/general/python-local-network-script.py {{ inventory_hostname }}"
+    script: "python-local-network-script.py {{ inventory_hostname }}"
     args: 
       executable: python3
     register: py_out
