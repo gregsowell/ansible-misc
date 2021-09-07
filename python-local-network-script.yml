@@ -1,0 +1,17 @@
+---
+- name: testing out local execution of scripts for networking devices
+  gather_facts: false
+  hosts: all
+  vars:
+
+  tasks:
+  - name: run python script against hosts
+    delegate_to: localhost
+    script: "/var/lib/awx/projects/general/python-local-network-script.py {{ inventory_hostname }}"
+    args: 
+      executable: python3
+    register: py_out
+
+  - name: debug py_out
+    debug:
+      var: py_out.stdout
