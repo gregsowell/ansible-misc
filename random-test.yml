@@ -1,9 +1,15 @@
 ---
 - name: test random things
-  hosts: localhost
+  hosts: all
   gather_facts: false
   vars:
   tasks:
+  - name: quick check if all hosts was specified with no limit
+    ansible.builtin.assert:
+      that: ansible_play_hosts_all|length < groups.all|length
+      fail_msg: '[ERROR] All hosts not allowed.'
+    run_once: true
+
   - name: try and access inventory items from outside the hosts section
     ansible.builtin.debug:
-      var: hostvars['greg-rocky86lts']
+      var: inventory_hostname
