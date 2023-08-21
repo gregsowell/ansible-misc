@@ -6,4 +6,4 @@
   tasks:
   - name: try and access inventory items from outside the hosts section
     ansible.builtin.debug:
-      var: hostvars[inventory_hostname]
+      var: hostvars['greg-rocky86lts']
