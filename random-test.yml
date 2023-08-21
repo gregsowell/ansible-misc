@@ -10,6 +10,6 @@
       fail_msg: '[ERROR] All hosts not allowed.'
     run_once: true
 
-  - name: try and access inventory items from outside the hosts section
+  - name: print the host names
     ansible.builtin.debug:
       var: inventory_hostname
