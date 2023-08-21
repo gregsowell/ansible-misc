@@ -1,0 +1,9 @@
+---
+- name: test random things
+  hosts: localhost
+  gather_facts: false
+  vars:
+  tasks:
+  - name: try and access inventory items from outside the hosts section
+    ansible.bultin.debug:
+      var: hostvars[inventory_hostname].ansible_host
