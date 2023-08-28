@@ -1,14 +1,14 @@
 ---
-- name: Gather basic information about localhost
+- name: Gather user list from localhost
   hosts: localhost
   gather_facts: false
   vars:
   tasks:
-  - name: gather uptime
+  - name: Collect list of users
     ansible.builtin.shell: "awk -F: '{ print $1}' /etc/passwd"
     register: my_users
       
-  - name: show my gathered uptime
+  - name: Show my gathered user list
     ansible.builtin.debug:
 #      var: ansible_facts
       var: my_users.stdout_lines
