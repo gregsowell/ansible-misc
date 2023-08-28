@@ -7,6 +7,7 @@
   - name: Collect list of users
     ansible.builtin.shell: "awk -F: '{ print $1}' /etc/passwd"
     register: my_users
+    chaned_when: false
       
   - name: Show my gathered user list
     ansible.builtin.debug:
