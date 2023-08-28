@@ -11,7 +11,7 @@
       create: yes
       
   - name: Grab contents of file
-    ansible.builtin.shell: cat /tmp/text.txt
+    ansible.builtin.shell: cat /tmp/test.txt
     register: file_contents
 
   - name: Display file_contents 
