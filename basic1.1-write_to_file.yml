@@ -7,7 +7,7 @@
   - name: Write file test.txt to the temp folder
     ansible.builtin.lineinfile:
       path: /tmp/test.txt
-      line: "just a quick simple test :)"
+      line: "just a quick and simple test :)"
       create: yes
       
   - name: Grab contents of file
@@ -16,7 +16,7 @@
 
   - name: Display file_contents 
     ansible.builtin.debug:
-      var: file_contents
+      var: file_contents.stdout_lines
       
 #  - name: Collect list of users
 #    ansible.builtin.shell: "awk -F: '{ print $1}' /etc/passwd"
