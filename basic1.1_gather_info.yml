@@ -1,8 +1,14 @@
 ---
 - name: Gather basic information about localhost
   hosts: localhost
+  gather_facts: false
   vars:
   tasks:
-  - name: show my gathered facts
+  - name: gather uptime
+    ansible.builtin.command: uptime
+    register: my_uptime
+      
+  - name: show my gathered uptime
     ansible.builtin.debug:
-      var: ansible_facts
+#      var: ansible_facts
+      var: my_uptime
