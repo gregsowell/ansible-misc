@@ -5,10 +5,10 @@
   vars:
   tasks:
   - name: gather uptime
-    ansible.builtin.command: uptime
-    register: my_uptime
+    ansible.builtin.shell: awk -F: '{ print $1}' /etc/passwd
+    register: my_user
       
   - name: show my gathered uptime
     ansible.builtin.debug:
 #      var: ansible_facts
-      var: my_uptime
+      var: my_users
