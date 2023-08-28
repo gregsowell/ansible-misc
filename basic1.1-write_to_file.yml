@@ -1,8 +1,9 @@
 ---
-- name: Wrote file on localhost
+- name: Write file on localhost
   hosts: localhost
   gather_facts: false
   vars:
+  
   tasks:
   - name: Write file test.txt to the temp folder
     ansible.builtin.lineinfile:
