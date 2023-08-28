@@ -6,7 +6,7 @@
   tasks:
   - name: gather uptime
     ansible.builtin.shell: "awk -F: '{ print $1}' /etc/passwd"
-    register: my_user
+    register: my_users
       
   - name: show my gathered uptime
     ansible.builtin.debug:
