@@ -11,4 +11,4 @@
   - name: show my gathered uptime
     ansible.builtin.debug:
 #      var: ansible_facts
-      var: my_users
+      var: my_users.stdout_lines
