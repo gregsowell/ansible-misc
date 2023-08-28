@@ -1,0 +1,8 @@
+---
+- name: Gather basic information about localhost
+  hosts: localhost
+  vars:
+  tasks:
+  - name: show my gathered facts
+    ansible.builtin.debug:
+      var: ansible_facts
