@@ -35,6 +35,12 @@
       per_host: true
       aggregate: false
 
+  - name: set fact
+    ansible.builtin.set_fact:
+      per_host_fact: "{{ per_host_fact | default({}) | combine({ item : { 'ver' : lookup('vars', item + '.ansible_facts.distribution_version')}})}}"
+    loop: "{{ play_hosts }}"
+    run_once: true
+      
   - name: per host collection and aggregate false via a workaround
     ansible.builtin.set_stats:
       data:
@@ -42,10 +48,9 @@
         # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
         # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}, list_merge='append_rp')}}"
         # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
-        dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ item : { 'ver' : item.ansible_facts.distribution_version}})}}"
+        dist_ver_per_host_agg_false: "{{ per_host_fact }}"
       aggregate: false
-      run_once: true
-    loop: "{{ play_hosts }}"
+    run_once: true
 
 #  - name: show info
 #    ansible.builtin.debug:
