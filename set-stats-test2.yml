@@ -1,7 +1,7 @@
 ---
 - name: Print out set_stats info
   hosts: all
-  # gather_facts: false
+  gather_facts: false
   vars:
     show_custom_stats: true
   tasks:
