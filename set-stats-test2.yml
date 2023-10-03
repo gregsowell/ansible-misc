@@ -14,11 +14,14 @@
         - "dist_ver_per_host_true_agg_false = {{ dist_ver_per_host_true_agg_false | default('not set') }}"
         # - "dist_ver_per_host_agg_false = {{ dist_ver_per_host_agg_false }}"
     ignore_errors: true
+    run_once: true
 
   - name: show dist_ver_per_host_agg_false which is workaround with no aggregation
     ansible.builtin.debug:
       var: dist_ver_per_host_agg_false
+    run_once: true
 
   - name: show dist_ver_per_host_agg_true which is workaround with aggregation
     ansible.builtin.debug:
       var: dist_ver_per_host_agg_true
+    run_once: true
