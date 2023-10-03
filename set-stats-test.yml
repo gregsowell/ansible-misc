@@ -52,10 +52,11 @@
         # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}, list_merge='append_rp')}}"
         # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
         # dist_ver_per_host_agg_false: "{{ per_host_fact }}"
-        dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ item : { 'ver' : hostvars[item].ansible_facts.distribution_version}})}}"
+        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ item : { 'ver' : hostvars[item].ansible_facts.distribution_version}})}}"
+        dist_ver_per_host_agg_false: "{{ { inventory_hostname : { 'ver' : ansible_facts.distribution_version}} }}"
       aggregate: true
-    run_once: true
-    loop: "{{ play_hosts }}"
+#    run_once: true
+#    loop: "{{ play_hosts }}"
 
 #  - name: show info
 #    ansible.builtin.debug:
