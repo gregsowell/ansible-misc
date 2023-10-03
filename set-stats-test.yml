@@ -1,0 +1,12 @@
+---
+- name: Various test of the set_stats module
+  hosts: all
+  # gather_facts: false
+  vars:
+  tasks:
+  - name: spit out gathered facts
+    ansible.builtin.debug:
+      var: ansible_facts
+#  - name: per_host true
+#  - name: per_host false - default behavior
+#  - name: aggregate false
