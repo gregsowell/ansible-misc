@@ -12,3 +12,4 @@
         - "dist_ver_per_host_true_agg_true = {{ dist_ver_per_host_true_agg_true }}"
         - "dist_ver_per_host_false_agg_false = {{ dist_ver_per_host_false_agg_false }}"
         - "dist_ver_per_host_true_agg_false = {{ dist_ver_per_host_true_agg_false }}"
+        - "dist_ver_per_host_agg_false = {{ dist_ver_per_host_agg_false }}"
