@@ -5,11 +5,11 @@
   vars:
     show_custom_stats: true
   tasks:
-  - name: spit out gathered facts
-    ansible.builtin.debug:
-#      var: ansible_facts
-      var: hostvars
-# distribution_version
+#  - name: spit out gathered facts
+#    ansible.builtin.debug:
+##      var: ansible_facts
+#      var: hostvars
+
   - name: per_host false and aggregate true- default behavior
     ansible.builtin.set_stats:
       data:
