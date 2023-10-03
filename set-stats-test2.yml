@@ -5,11 +5,19 @@
   vars:
     show_custom_stats: true
   tasks:
-  - name: show info
+  - name: show first four
     ansible.builtin.debug:
       msg:
         - "dist_ver_per_host_false_agg_true = {{ dist_ver_per_host_false_agg_true }}"
         - "dist_ver_per_host_true_agg_true = {{ dist_ver_per_host_true_agg_true }}"
         - "dist_ver_per_host_false_agg_false = {{ dist_ver_per_host_false_agg_false }}"
         - "dist_ver_per_host_true_agg_false = {{ dist_ver_per_host_true_agg_false }}"
-        - "dist_ver_per_host_agg_false = {{ dist_ver_per_host_agg_false }}"
+        # - "dist_ver_per_host_agg_false = {{ dist_ver_per_host_agg_false }}"
+
+  - name: show dist_ver_per_host_agg_false which is workaround with no aggregation
+    ansible.builtin.debug:
+      var: dist_ver_per_host_agg_false
+
+  - name: show dist_ver_per_host_agg_true which is workaround with aggregation
+    ansible.builtin.debug:
+      var: dist_ver_per_host_agg_true
