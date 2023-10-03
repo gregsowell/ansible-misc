@@ -38,8 +38,9 @@
   - name: per host collection and aggregate false via a workaround
     ansible.builtin.set_stats:
       data:
-        #dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ 'key': inventory_hostname : 'value': ansible_facts.distribution_version)}}"
-        dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
+        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ 'key': inventory_hostname : 'value': ansible_facts.distribution_version)}}"
+        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
+        dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}, list_merge=append_rp)}}"
       aggregate: false
 
 #  - name: show info
