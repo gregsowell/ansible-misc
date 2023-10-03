@@ -37,7 +37,7 @@
 
   - name: set fact
     ansible.builtin.set_fact:
-      per_host_fact: "{{ per_host_fact | default({}) | combine({ item : { 'ver' : lookup('vars', 'hostvars.' + item + '.ansible_facts.distribution_version')}})}}"
+      per_host_fact: "{{ per_host_fact | default({}) | combine({ item : { 'ver' : lookup('vars', 'hostvars[' + item + ']ansible_facts.distribution_version')}})}}"
     loop: "{{ play_hosts }}"
     run_once: true
       
