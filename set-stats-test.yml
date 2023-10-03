@@ -55,7 +55,7 @@
         # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ item : { 'ver' : hostvars[item].ansible_facts.distribution_version}})}}"
         # dist_ver_per_host_agg_false: "{{ { inventory_hostname : { 'ver' : ansible_facts.distribution_version}} }}"
         dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}) }}"
-      aggregate: true
+      aggregate: false
 #    run_once: true
 #    loop: "{{ play_hosts }}"
 
