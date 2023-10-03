@@ -13,6 +13,7 @@
         - "dist_ver_per_host_false_agg_false = {{ dist_ver_per_host_false_agg_false }}"
         - "dist_ver_per_host_true_agg_false = {{ dist_ver_per_host_true_agg_false }}"
         # - "dist_ver_per_host_agg_false = {{ dist_ver_per_host_agg_false }}"
+    ignore_errors: true
 
   - name: show dist_ver_per_host_agg_false which is workaround with no aggregation
     ansible.builtin.debug:
