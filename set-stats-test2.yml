@@ -12,8 +12,6 @@
         - "dist_ver_per_host_true_agg_true = {{ dist_ver_per_host_true_agg_true | default('not set') }}"
         - "dist_ver_per_host_false_agg_false = {{ dist_ver_per_host_false_agg_false }}"
         - "dist_ver_per_host_true_agg_false = {{ dist_ver_per_host_true_agg_false | default('not set') }}"
-        # - "dist_ver_per_host_agg_false = {{ dist_ver_per_host_agg_false }}"
-    ignore_errors: true
     run_once: true
 
   - name: show dist_ver_per_host_agg_false which is workaround with no aggregation
