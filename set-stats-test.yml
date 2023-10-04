@@ -40,33 +40,11 @@
   - name: per host collection and aggregate false via a workaround
     ansible.builtin.set_stats:
       data:
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ 'key': inventory_hostname : 'value': ansible_facts.distribution_version)}}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}, list_merge='append_rp')}}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
-        # dist_ver_per_host_agg_false: "{{ per_host_fact }}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ item : { 'ver' : hostvars[item].ansible_facts.distribution_version}})}}"
-        # dist_ver_per_host_agg_false: "{{ { inventory_hostname : { 'ver' : ansible_facts.distribution_version}} }}"
         dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}) }}"
       aggregate: false
 
   - name: per host collection and aggregate true via a workaround
     ansible.builtin.set_stats:
       data:
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ 'key': inventory_hostname : 'value': ansible_facts.distribution_version)}}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}, list_merge='append_rp')}}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}})}}"
-        # dist_ver_per_host_agg_false: "{{ per_host_fact }}"
-        # dist_ver_per_host_agg_false: "{{ dist_ver_per_host_agg_false | default ({}) | combine({ item : { 'ver' : hostvars[item].ansible_facts.distribution_version}})}}"
-        # dist_ver_per_host_agg_false: "{{ { inventory_hostname : { 'ver' : ansible_facts.distribution_version}} }}"
         dist_ver_per_host_agg_true: "{{ dist_ver_per_host_agg_true | default({}) | combine({ inventory_hostname : { 'ver' : ansible_facts.distribution_version}}) }}"
       aggregate: true
-
-#  - name: show info
-#    ansible.builtin.debug:
-#      msg:
-#        - "dist_ver_per_host_false_agg_true = {{ dist_ver_per_host_false_agg_true }}"
-#        - "dist_ver_per_host_true_agg_true = {{ dist_ver_per_host_true_agg_true }}"
-#        - "dist_ver_per_host_false_agg_false = {{ dist_ver_per_host_false_agg_false }}"
-#        - "dist_ver_per_host_true_agg_false = {{ dist_ver_per_host_true_agg_false }}"
