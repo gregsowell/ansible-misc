@@ -1,6 +1,6 @@
 ---
 - name: Make an ansible shell command idempotent...if possible
-  hosts: Greg-rocky-9
+  hosts: Greg-rocky9
   gather_facts: false
   vars:
   tasks:
