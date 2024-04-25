@@ -12,3 +12,6 @@
     - name: Delete the dummy file
       ansible.builtin.shell: rm /tmp/test1.txt -fv
       
+    - name: Delete a second dummy file
+      ansible.builtin.shell: rm /tmp/test2.txt -fv
+      
