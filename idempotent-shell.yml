@@ -5,10 +5,10 @@
   vars:
   tasks:
 #  echo "i'm always hungry" > test1.txt
-    - name: create test file
-      ansible.builtin.copy:
-        content: I'm always hungry"
-        dest: /tmp/test1.txt
+    # - name: create test file
+    #   ansible.builtin.copy:
+    #     content: I'm always hungry"
+    #     dest: /tmp/test1.txt
 
 # [root@Greg-rocky9 ~]# rm test1.txt -fv
 # removed 'test1.txt'
