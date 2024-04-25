@@ -16,3 +16,8 @@
       ansible.builtin.shell: rm /tmp/test1.txt -fv
       register: remove_check
       changed_when: "'removed' in remove_check.stdout"
+
+    - name: delete a second test file using shell, but make it idempotent
+      ansible.builtin.shell: rm /tmp/test2.txt -fv
+      register: remove_check2
+      changed_when: "'removed' in remove_check2.stdout"
