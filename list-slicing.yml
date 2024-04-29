@@ -15,3 +15,8 @@
       ansible.builtin.debug:
         var: item
       loop: "{{ my_list[1:] }}"
+
+    - name: Skip the last item in the list
+      ansible.builtin.debug:
+        var: item
+      loop: "{{ my_list[:-1] }}"
