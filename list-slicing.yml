@@ -38,6 +38,7 @@
         extended: true
 
     - name: Length of list - loop control extended msg
+      when: ansible_loop.first
       ansible.builtin.debug:
         msg: "{{ ansible_loop.length }}"
       loop: "{{ my_list }}"
