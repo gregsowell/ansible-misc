@@ -1,0 +1,17 @@
+---
+- name: Testing some list slicing
+  hosts: localhost
+  gather_facts: false
+  vars:
+    my_list:
+      - a
+      - b
+      - c
+      - d
+      - e
+
+  tasks:
+    - name: Skip the first item in the list
+      ansible.builtin.debug:
+        var: item
+      loop: "{{ my_list[1:] }}"
