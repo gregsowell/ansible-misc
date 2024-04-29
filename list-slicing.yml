@@ -16,6 +16,12 @@
         var: item
       loop: "{{ my_list[1:] }}"
 
+    - name: Skip the first item in the list
+      when: not ansible_loop.first
+      ansible.builtin.debug:
+        var: item
+      loop: "{{ my_list }}"
+
     - name: Skip the last item in the list
       ansible.builtin.debug:
         var: item
