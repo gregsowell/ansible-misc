@@ -43,7 +43,6 @@
       loop: "{{ my_list }}"
       loop_control:
         extended: true
-      run_once: true
 
     - name: Length of list
       ansible.builtin.debug:
