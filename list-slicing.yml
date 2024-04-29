@@ -21,6 +21,8 @@
       ansible.builtin.debug:
         var: item
       loop: "{{ my_list }}"
+      loop_control:
+        extended: true
 
     - name: Skip the last item in the list
       ansible.builtin.debug:
