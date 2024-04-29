@@ -16,10 +16,18 @@
         var: item
       loop: "{{ my_list[1:] }}"
 
-    - name: Skip the first item in the list - loop control extended
+    - name: Skip the first item in the list - loop control extended msg
       when: not ansible_loop.first
       ansible.builtin.debug:
         msg: "{{item}}"
+      loop: "{{ my_list }}"
+      loop_control:
+        extended: true
+
+    - name: Skip the first item in the list - loop control extended var
+      when: not ansible_loop.first
+      ansible.builtin.debug:
+        var: item
       loop: "{{ my_list }}"
       loop_control:
         extended: true
