@@ -45,6 +45,6 @@
       loop_control:
         extended: true
 
-    - name: Length of list
+    - name: Length of list - via plugin
       ansible.builtin.debug:
         msg: "{{ my_list | length }}"
