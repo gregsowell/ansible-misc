@@ -19,7 +19,7 @@
     - name: Skip the first item in the list - loop control extended
       when: not ansible_loop.first
       ansible.builtin.debug:
-        var: item.item
+        msg: "{{item}}"
       loop: "{{ my_list }}"
       loop_control:
         extended: true
