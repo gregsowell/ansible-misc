@@ -8,3 +8,9 @@
   when: files_count.stdout != "0"
   ansible.builtin.debug:
     msg: "{{ current_user }} - {{ files_count.stdout }}"
+
+- name: Create a totaled up variable
+  set_stats:
+    data:
+      total_files: "{{ total_files ~ ' ' ~ current_user ~ ' - ' ~ files_count.stdout }}"
+  when: files_count.stdout != "0"

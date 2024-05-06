@@ -21,3 +21,7 @@
       loop: "{{ users.stdout_lines }}"
       loop_control:
         loop_var: current_user
+
+    - name: Debug total_files variable
+      ansible.builtin.debug:
+        var: total_files
