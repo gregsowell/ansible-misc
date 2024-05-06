@@ -18,3 +18,5 @@
     - name: Outer loop - we go over our main loop and call a task file
       include_tasks: tasks/inner-loop.yml
       loop: "{{ users.stdout_lines }}"
+      loop_control:
+        loop_var: current_user

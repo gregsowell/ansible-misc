@@ -1,1 +1,8 @@
 ---
+- name: Count of files owned by this user
+  ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
+  register: files_count
+
+- name: Debug files_count variable
+  ansible.builtin.debug:
+    var: files_count.stdout
