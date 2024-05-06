@@ -10,8 +10,6 @@
     msg: "{{ current_user }} - {{ files_count.stdout }}"
 
 - name: Create a totaled up variable
-  set_stats:
-    data:
-      total_files: "{{ total_files | default('') ~ ' ' ~ current_user ~ ' - ' ~ files_count.stdout }}"
-    aggregate: no
+  set_fact:
+    total_files: "{{ total_files | default('') ~ ' ' ~ current_user ~ ' - ' ~ files_count.stdout }}"
   when: files_count.stdout != "0"
