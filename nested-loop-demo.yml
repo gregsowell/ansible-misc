@@ -10,10 +10,11 @@
     - name: Gather list of users from the linux server using the shell module
       ansible.builtin.shell: 'cat /etc/passwd | cut -d: -f1'
       register: users
+      changed_when: false
         
-    - name: Debug users variable
-      ansible.builtin.debug:
-        var: users.stdout_lines
+    # - name: Debug users variable
+    #   ansible.builtin.debug:
+    #     var: users.stdout_lines
 
     - name: Outer loop - we go over our main loop and call a task file
       include_tasks: tasks/inner-loop.yml
