@@ -8,7 +8,7 @@
 
   tasks:
     - name: Gather list of users from the linux server using the shell module
-      ansible.builtin.shell: cat /etc/passwd | cut -d: -f1
+      ansible.builtin.shell: 'cat /etc/passwd | cut -d: -f1'
       register: users
         
     - name: Debug users variable
