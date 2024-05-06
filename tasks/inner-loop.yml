@@ -4,10 +4,10 @@
   register: files_count
   changed_when: false
 
-- name: Debug files_count variable
-  when: files_count.stdout != "0"
-  ansible.builtin.debug:
-    msg: "{{ current_user }} - {{ files_count.stdout }}"
+# - name: Debug files_count variable
+#   when: files_count.stdout != "0"
+#   ansible.builtin.debug:
+#     msg: "{{ current_user }} - {{ files_count.stdout }}"
 
 - name: Add additional items to the total_files list
   set_fact:
