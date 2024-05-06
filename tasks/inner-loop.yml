@@ -5,4 +5,4 @@
 
 - name: Debug files_count variable
   ansible.builtin.debug:
-    var: files_count.stdout
+    msg: "{{ current_user }} - {{ files_count.stdout }}"
