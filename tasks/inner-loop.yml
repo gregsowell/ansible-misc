@@ -9,7 +9,7 @@
 #   ansible.builtin.debug:
 #     msg: "{{ current_user }} - {{ files_count.stdout }}"
 
-- name: Add additional items to the total_files list
+- name: "Add additional items to the total_files list for {{ current_user }}"
   set_fact:
     total_files: "{{ total_files | default([]) + [current_user ~ ' - ' ~ files_count.stdout] }}"
   when: files_count.stdout != "0"
