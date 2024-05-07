@@ -42,7 +42,11 @@
       when: package_change.stdout | default("") != ""
       block:
         - name: Copy available-packages-temp.txt to available-packages.txt
-          ansible.builtin.shell: "cp {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+          ansible.builtin.copy:
+            src: "{{ file_location }}/available-packages-temp.txt"
+            dest: "{{ file_location }}/available-packages.txt"
+            force: yes
+            remote_src: true
 
         - name: Send Email
           community.general.mail:
