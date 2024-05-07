@@ -19,11 +19,10 @@
       loop: "{{ found_files.stdout_lines }}"
       register: file_permissions
 
-    # - name: "Debug file_permissions variable for {{ current_user }}"
-    #   when: file_permissions.stdout != ""
-    #   ansible.builtin.debug:
-    #     var: file_permissions.stdout_lines
-
+    - name: debug file_permissions variable
+      ansible.builtin.debug:
+        var: file_permissions.stdout_lines
+        
 - name: Count of files owned by this user
   ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
   register: files_count
