@@ -12,10 +12,6 @@
       when: found_files.stdout != ""
       ansible.builtin.debug:
         var: found_files.stdout_lines
-    #  when: found_files.stdout != ""
-      ansible.builtin.debug:
-        # msg: "{{ current_user }} - {{ found_files.stdout_lines }}"
-        var: found_files.stdout_lines
 
 - name: Count of files owned by this user
   ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
