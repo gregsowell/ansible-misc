@@ -3,12 +3,33 @@
   hosts: Greg-rocky9
   gather_facts: false
   vars:
+    file_location: /root
   tasks:
     - name: Use dnf shell command to get a list of all packages in repository
-      ansible.builtin.shell: "dnf list available"
-      register: installed_packages
+      ansible.builtin.shell: "dnf list available > {{ file_location }}/available-packages-temp.txt"
+      # register: installed_packages
+      # changed_when: false
+
+    # - name: Debug installed_packages variable
+    #   ansible.builtin.debug:
+    #     var: installed_packages.stdout_lines
+
+    - name: Check if available-packages.txt file exists
+      ansible.builtin.stat:
+        path: "{{ file_location }}/available-packages.txt"
+      register: file_check
+
+    - name: Perform block if file_check file doesn't exist
+      when: file_check.stat.exists == true
+      block:
+        - name: Copy available-packages-temp.txt to available-packages.txt
+          ansible.builtin.shell: "cp {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+
+    - name: Compare available-packages-temp.txt and available-packages.txt
+      ansible.builtin.shell: "diff {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+      register: package_change
       changed_when: false
 
-    - name: Debug installed_packages variable
+    - name: Debug package_change variable
       ansible.builtin.debug:
-        var: installed_packages.stdout_lines
+        var: package_change.stdout_lines
