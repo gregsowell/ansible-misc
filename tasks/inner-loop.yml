@@ -21,8 +21,8 @@
 
     - name: debug file_permissions variable
       ansible.builtin.debug:
-        var: file_permissions.stdout_lines
-        
+        var: file_permissions.stdout_lines | default(omit)
+
 - name: Count of files owned by this user
   ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
   register: files_count
