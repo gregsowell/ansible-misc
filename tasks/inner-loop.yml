@@ -20,6 +20,10 @@
       register: file_permissions_check
       changed_when: false
 
+    - name: debug file_permissions_check variable 1
+      ansible.builtin.debug:
+        var: file_permissions_check
+
     - name: debug file_permissions_check variable
       when: file_permissions_check.stdout | default("") != ""
       ansible.builtin.debug:
