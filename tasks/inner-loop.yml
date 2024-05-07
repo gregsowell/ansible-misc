@@ -1,5 +1,6 @@
 ---
 - name: Files owned by tss user
+  when: current_user == "tss"
   ansible.builtin.shell: "find / -user {{ current_user }}"
   register: found_files
   changed_when: false
