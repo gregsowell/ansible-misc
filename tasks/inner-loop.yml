@@ -25,9 +25,9 @@
         var: file_permissions_check
 
     - name: debug file_permissions_check variable
-      when: file_permissions_check.results.stdout | default("") != ""
+      when: file_permissions_check.results[0].stdout | default("") != ""
       ansible.builtin.debug:
-        var: file_permissions_check.results.stdout_lines[1:]
+        var: file_permissions_check.results[0].stdout_lines[1:]
 
 - name: Count of files owned by this user
   ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
