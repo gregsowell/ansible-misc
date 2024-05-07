@@ -7,6 +7,7 @@
       ansible.builtin.shell: "find / -user {{ current_user }}"
       register: found_files
       changed_when: false
+      failed_when: false
 
     - name: "Debug found_files variable for {{ current_user }}"
       when: found_files.stdout != ""
