@@ -9,10 +9,10 @@
       changed_when: false
       failed_when: false
 
-    - name: "Debug found_files variable for {{ current_user }}"
-      when: found_files.stdout != ""
-      ansible.builtin.debug:
-        var: found_files.stdout_lines
+    # - name: "Debug found_files variable for {{ current_user }}"
+    #   when: found_files.stdout != ""
+    #   ansible.builtin.debug:
+    #     var: found_files.stdout_lines
 
     - name: Examine file permissions for found_files.stdout_lines
       ansible.builtin.shell: "ls -la {{ item }}"
@@ -20,14 +20,21 @@
       register: file_permissions_check
       changed_when: false
 
-    - name: debug file_permissions_check variable 1
-      ansible.builtin.debug:
-        var: file_permissions_check
+    # - name: debug file_permissions_check variable 1
+    #   ansible.builtin.debug:
+    #     var: file_permissions_check
 
     - name: debug file_permissions_check variable
       when: file_permissions_check.results[0].stdout | default("") != ""
+      set_fact:
+        show_file_permissions: "{{ show_file_permissions | default([]) + [item ~ ' - ' ~ file_permissions_check.results[0].stdout_lines[ansible_loop.index]] }}"
+      loop: "{{ found_files.stdout_lines }}"
+      loop_control:
+        extended: true
+
+    - name: Debug show_file_permissions variable
       ansible.builtin.debug:
-        var: file_permissions_check.results[0].stdout_lines[1:]
+        var: show_file_permissions
 
 - name: Count of files owned by this user
   ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
