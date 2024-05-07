@@ -1,0 +1,14 @@
+---
+- name: Playbook to monitor packages in a repository and alert when there's a change
+  hosts: localhost
+  gather_facts: false
+  vars:
+  tasks:
+    - name: Use dnf shell command to get a list of all packages in repository
+      ansible.builtin.shell: "dnf list available"
+      register: installed_packages
+      changed_when: false
+
+    - name: Debug installed_packages variable
+      ansible.builtin.debug:
+        var: installed_packages.stdout_lines

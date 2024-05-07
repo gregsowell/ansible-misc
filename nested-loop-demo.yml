@@ -16,6 +16,19 @@
     #   ansible.builtin.debug:
     #     var: users.stdout_lines
 
+    # - name: Block for just getting counts of files owned by users
+    #   when: 'current_user in match_user'
+    #   block:
+    #     - name: Count of files owned by this user
+    #       ansible.builtin.shell: "find / -user {{ current_user }} | wc -l"
+    #       register: files_count
+    #       changed_when: false
+
+    #     - name: "Add additional items to the total_files list for {{ current_user }}"
+    #       set_fact:
+    #         total_files: "{{ total_files | default([]) + [current_user ~ ' - ' ~ files_count.stdout] }}"
+    #       when: files_count.stdout != "0"
+
     - name: Outer loop - we go over our main loop and call a task file
       when: 'current_user in match_user'
       include_tasks: tasks/inner-loop.yml
