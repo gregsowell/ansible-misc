@@ -1,6 +1,7 @@
 ---
 - name: Block for tss found files
   when: current_user == "tss"
+  ignore_errors: true
   block:
     - name: Files owned by tss user
       ansible.builtin.shell: "find / -user {{ current_user }}"
