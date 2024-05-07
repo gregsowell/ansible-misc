@@ -18,6 +18,7 @@
       ansible.builtin.shell: "ls -la {{ item }}"
       loop: "{{ found_files.stdout_lines }}"
       register: file_permissions_check
+      changed_when: false
 
     - name: debug file_permissions_check variable
       when: file_permissions_check.stdout | default("") != ""
