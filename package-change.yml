@@ -4,6 +4,13 @@
   gather_facts: false
   vars:
     file_location: /root
+
+    #email settings
+    email_subject: Repository Package Version Change
+    email_host: 10.0.110.32
+    email_from: system@gregsowell.com
+    email_to: greg@gregsowell.com
+
   tasks:
     - name: Use dnf shell command to get a list of all packages in repository
       ansible.builtin.shell: "dnf list available | tail -n +3 > {{ file_location }}/available-packages-temp.txt"
@@ -31,6 +38,24 @@
       changed_when: false
       failed_when: package_change.rc != 1 and package_change.rc != 0
 
-    - name: Debug package_change variable
-      ansible.builtin.debug:
-        var: package_change.stdout_lines
+    - name: Block to process when package_change is not empty
+      when: package_change.stdout | default("") != ""
+      block:
+        - name: Copy available-packages-temp.txt to available-packages.txt
+          ansible.builtin.shell: "cp {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+
+        - name: Send Email
+          community.general.mail:
+            host: "{{ email_host }}"
+            from: "{{ email_from }}"
+            port: 25
+            to: "{{ email_to }}"
+            subject: "[Ansible] {{ email_subject }}"
+            # body: "{{ lookup('template', 'report.html.j2') }}"
+            body: "{{ package_change.stdout_lines }}"
+            attach: 
+              - "{{ file_location }}/available-packages-temp.txt"
+              - "{{ file_location }}/available-packages.txt"
+            subtype: html
+          delegate_to: localhost
+          run_once: true
