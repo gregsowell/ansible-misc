@@ -3,6 +3,9 @@
   hosts: localhost
   gather_facts: false
   vars:
+    match_user:
+      - root
+      - tss
   tasks:
     - name: Gather list of users from the linux server using the shell module
       ansible.builtin.shell: 'cat /etc/passwd | cut -d: -f1'
@@ -14,6 +17,7 @@
     #     var: users.stdout_lines
 
     - name: Outer loop - we go over our main loop and call a task file
+      when: 'current_user in match_user'
       include_tasks: tasks/inner-loop.yml
       loop: "{{ users.stdout_lines }}"
       loop_control:
