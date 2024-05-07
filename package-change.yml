@@ -1,6 +1,6 @@
 ---
 - name: Playbook to monitor packages in a repository and alert when there's a change
-  hosts: localhost
+  hosts: Greg-rocky9
   gather_facts: false
   vars:
   tasks:
