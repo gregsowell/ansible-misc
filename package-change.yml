@@ -29,7 +29,7 @@
       ansible.builtin.shell: "diff {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
       register: package_change
       changed_when: false
-      failed_when: package_change.rc != 1 or package_change.rc != 0
+      failed_when: package_change.rc != 1 and package_change.rc != 0
 
     - name: Debug package_change variable
       ansible.builtin.debug:
