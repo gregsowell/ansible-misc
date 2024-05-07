@@ -20,7 +20,7 @@
       register: file_check
 
     - name: Perform block if file_check file doesn't exist
-      when: file_check.stat.exists == true
+      when: file_check.stat.exists == false
       block:
         - name: Copy available-packages-temp.txt to available-packages.txt
           ansible.builtin.shell: "cp {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
