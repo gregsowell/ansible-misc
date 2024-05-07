@@ -6,7 +6,7 @@
     file_location: /root
   tasks:
     - name: Use dnf shell command to get a list of all packages in repository
-      ansible.builtin.shell: "dnf list available > {{ file_location }}/available-packages-temp.txt"
+      ansible.builtin.shell: "dnf list available | tail -n +3 > {{ file_location }}/available-packages-temp.txt"
       # register: installed_packages
       # changed_when: false
 
