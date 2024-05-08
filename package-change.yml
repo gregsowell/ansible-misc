@@ -42,13 +42,6 @@
     - name: Block to process when package_change is not empty
       when: package_change.stdout | default("") != ""
       block:
-        - name: Copy available-packages-temp.txt to available-packages.txt
-          ansible.builtin.copy:
-            src: "{{ file_location }}/available-packages-temp.txt"
-            dest: "{{ file_location }}/available-packages.txt"
-            force: yes
-            remote_src: true
-
         - name: Copy package files from remote host to localhost
           ansible.builtin.fetch:
             src: "{{ item }}"
@@ -57,6 +50,13 @@
           loop: 
             - "{{ file_location }}/available-packages-temp.txt"
             - "{{ file_location }}/available-packages.txt"
+
+        - name: Copy available-packages-temp.txt to available-packages.txt
+          ansible.builtin.copy:
+            src: "{{ file_location }}/available-packages-temp.txt"
+            dest: "{{ file_location }}/available-packages.txt"
+            force: yes
+            remote_src: true
 
         - name: Send Email
           community.general.mail:
