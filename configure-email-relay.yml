@@ -1,0 +1,22 @@
+---
+- name: Configure Email Relay
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Postfix
+      apt:
+        name: postfix
+        state: present
+
+    - name: Configure Postfix
+      template:
+        src: postfix/main.cf.j2
+        dest: /etc/postfix/main.cf
+      notify: Restart Postfix
+
+  handlers:
+    - name: Restart Postfix
+      service:
+        name: postfix
+        state: restarted
