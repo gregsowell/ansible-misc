@@ -8,7 +8,8 @@
     #email settings
     email_subject: Repository Package Version Change
     email_host: 10.0.110.32
-    email_from: system@gregsowell.com
+    # email_from: system@gregsowell.com
+    email_from: system@howmuchissauce.com
     email_to: greg@gregsowell.com
 
   tasks:
