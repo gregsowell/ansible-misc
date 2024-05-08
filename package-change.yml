@@ -1,15 +1,15 @@
 ---
-- name: Playbook to monitor packages in a repository and alert when there's a change
+- name: Playbook to monitor packages in a repository and alert when there's a new package
   hosts: Greg-rocky9
   gather_facts: false
   vars:
+    # Where will the package files be stored
     file_location: /root
 
-    #email settings
+    # Email settings
     email_subject: Repository Package Version Change
     email_host: 10.0.110.32
-    # email_from: system@gregsowell.com
-    email_from: system@howmuchissauce.com
+    email_from: system@gregsowell.com
     email_to: greg@gregsowell.com
 
   tasks:
@@ -65,11 +65,10 @@
             port: 25
             to: "{{ email_to }}"
             subject: "[Ansible] {{ email_subject }}"
-            # body: "{{ lookup('template', 'report.html.j2') }}"
             body: "{{ package_change.stdout_lines }}"
             attach: 
               - "{{ playbook_dir }}/available-packages-temp.txt"
               - "{{ playbook_dir }}/available-packages.txt"
-            # subtype: html
+            subtype: html
           delegate_to: localhost
           run_once: true
