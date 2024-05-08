@@ -70,6 +70,6 @@
             attach: 
               - "{{ playbook_dir }}/available-packages-temp.txt"
               - "{{ playbook_dir }}/available-packages.txt"
-            subtype: html
+            # subtype: html
           delegate_to: localhost
           run_once: true
