@@ -51,7 +51,7 @@
         - name: Copy package files from remote host to localhost
           ansible.builtin.fetch:
             src: "{{ item }}"
-            dest: "{{ playbook_dir }}"
+            dest: "{{ playbook_dir }}/"
             flat: yes
           loop: 
             - "{{ file_location }}/available-packages-temp.txt"
@@ -67,8 +67,8 @@
             # body: "{{ lookup('template', 'report.html.j2') }}"
             body: "{{ package_change.stdout_lines }}"
             attach: 
-              - "{{ file_location }}/available-packages-temp.txt"
-              - "{{ file_location }}/available-packages.txt"
+              - "{{ playbook_dir }}/available-packages-temp.txt"
+              - "{{ playbook_dir }}/available-packages.txt"
             subtype: html
           delegate_to: localhost
           run_once: true
