@@ -48,6 +48,15 @@
             force: yes
             remote_src: true
 
+        - name: Copy package files from remote host to localhost
+          ansible.builtin.fetch:
+            src: "{{ item }}"
+            dest: "{{ playbook_dir }}"
+            flat: yes
+          loop: 
+            - "{{ file_location }}/available-packages-temp.txt"
+            - "{{ file_location }}/available-packages.txt"
+
         - name: Send Email
           community.general.mail:
             host: "{{ email_host }}"
