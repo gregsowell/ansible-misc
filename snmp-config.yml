@@ -1,0 +1,13 @@
+---
+- name: SNMP updates
+  hosts: sw1
+  gather_facts: false
+  tasks:
+    - name: Configure SNMP with the config module
+      cisco.nxos.nxos_config:
+        lines:
+          - snmp-server community public group network-operator
+          - snmp-server community private group network-admin
+        #   - snmp-server contact "Network Operations"
+        #   - snmp-server location "Data Center"
+        # parents: snmp-server
