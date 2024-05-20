@@ -3,36 +3,24 @@
   hosts: sw1
   gather_facts: false
   tasks:
-    # - name: Find current SNMP configuration
-    #   cisco.nxos.nxos_command:
-    #     commands:  show running-config | section '^snmp-server'
-    #   register: snmp_show
+    - name: Parse config
+      cisco.nxos.nxos_snmp_server:
+        running_config: "{{ lookup('file', 'files/snmp.txt') }}"
+        state: parsed
+      register: parsed
 
-    # - name: Save snmp_show to a file
-    #   ansible.builtin.copy:
-    #     content: "{{ snmp_show.stdout[0] }}"
-    #     dest: /tmp/snmp_show.txt
-    #   delegate_to: localhost
-
-    # - name: Parse config
-    #   cisco.nxos.nxos_snmp_server:
-    #     running_config: "{{ lookup('file', '/tmp/snmp_show.txt') }}"
-    #     state: parsed
-    #   register: parsed
-    #   # delegate_to: localhost
-
-    # - name: Display parsed SNMP configuration
-    #   ansible.builtin.debug:
-    #     var: parsed
+    - name: Display parsed SNMP configuration
+      ansible.builtin.debug:
+        var: parsed
 
     - name: Replace existing SNMP configuration with the nxos_snmp_server module
       cisco.nxos.nxos_snmp_server:
-        config:
-          communities:
+        config: "{{ parsed }}"
+          # communities:
             # - name: public
             #   group: network-operator
-            - name: private
-              group: network-admin
+            # - name: private
+            #   group: network-admin
         state: replaced 
 
     - name: Find current SNMP configuration
