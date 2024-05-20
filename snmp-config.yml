@@ -14,6 +14,6 @@
         commands: show run | inc snmp-server
       register: output
 
-      - name: Display current SNMP configuration
-        ansible.builtin.debug:
-          var: output.stdout_lines
+    - name: Display current SNMP configuration
+      ansible.builtin.debug:
+        var: output.stdout_lines
