@@ -29,8 +29,8 @@
       cisco.nxos.nxos_snmp_server:
         config:
           communities:
-            # - name: public
-            #   group: network-operator
+            - name: public
+              group: network-operator
             - name: private
               group: network-admin
         state: replaced 
