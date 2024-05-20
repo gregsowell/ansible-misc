@@ -5,7 +5,7 @@
   tasks:
     - name: Find current SNMP configuration
       cisco.nxos.nxos_command:
-        commands: show running-config | section ‘^snmp-server’
+        commands:  show running-config | section '^snmp-server'
       register: snmp_show
 
     - name: Parse config
