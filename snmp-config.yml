@@ -12,8 +12,8 @@
     - name: Find current SNMP configuration
       cisco.nxos.nxos_command:
         commands: show run | inc community
-      register: output
+      register: snmp_output
 
     - name: Display current SNMP configuration
       ansible.builtin.debug:
-        var: output.stdout_lines
+        var: snmp_output.stdout_lines
