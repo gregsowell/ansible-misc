@@ -11,7 +11,7 @@
 
     - name: Find current SNMP configuration
       cisco.nxos.nxos_command:
-        commands: show run | inc snmp-server
+        commands: show run | inc community
       register: output
 
     - name: Display current SNMP configuration
