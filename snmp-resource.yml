@@ -9,8 +9,8 @@
           communities:
             - community: public
               group: network-operator
-            # - community: private
-            #   group: network-admin
+            - community: private
+              group: network-admin
         state: replaced
 
     - name: Find current SNMP configuration
