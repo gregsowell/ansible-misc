@@ -7,4 +7,13 @@
       cisco.nxos.nxos_config:
         lines:
           - snmp-server community public group network-operator
-#          - snmp-server community private group network-admin
+          - snmp-server community private group network-admin
+
+    - name: Find current SNMP configuration
+      cisco.nxos.nxos_command:
+        commands: show run | inc snmp-server
+      register: output
+
+      - name: Display current SNMP configuration
+        ansible.builtin.debug:
+          var: output.stdout_lines
