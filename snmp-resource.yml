@@ -11,6 +11,7 @@
               group: network-operator
             - community: private
               group: network-admin
+          state: replaced
 
     - name: Find current SNMP configuration
       cisco.nxos.nxos_command:
