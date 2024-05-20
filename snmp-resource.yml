@@ -19,7 +19,7 @@
         running_config: "{{ lookup('file', '/tmp/snmp_show.txt') }}"
         state: parsed
       register: parsed
-      delegate_to: localhost
+      # delegate_to: localhost
 
     - name: Display parsed SNMP configuration
       ansible.builtin.debug:
