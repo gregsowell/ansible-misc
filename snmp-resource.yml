@@ -15,7 +15,7 @@
 
     - name: Replace existing SNMP configuration with the nxos_snmp_server module
       cisco.nxos.nxos_snmp_server:
-        config: "{{ parsed }}"
+        config: "{{ parsed.parsed }}"
           # communities:
             # - name: public
             #   group: network-operator
