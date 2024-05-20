@@ -8,11 +8,18 @@
         commands:  show running-config | section '^snmp-server'
       register: snmp_show
 
+    - name: Save snmp_show to a file
+      ansible.builtin.copy:
+        content: "{{ snmp_show.stdout[0] }}"
+        dest: /tmp/snmp_show.txt
+      delegate_to: localhost
+
     - name: Parse config
       cisco.nxos.nxos_snmp_server:
-        running_config: "{{ snmp_show.stdout_lines }}"
+        running_config: "{{ lookup('file', '/tmp/snmp_show.txt') }}"
         state: parsed
       register: parsed
+      delegate_to: localhost
 
     - name: Display parsed SNMP configuration
       ansible.builtin.debug:
