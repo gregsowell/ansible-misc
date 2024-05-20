@@ -7,7 +7,4 @@
       cisco.nxos.nxos_config:
         lines:
           - snmp-server community public group network-operator
-          - snmp-server community private group network-admin
-        #   - snmp-server contact "Network Operations"
-        #   - snmp-server location "Data Center"
-        # parents: snmp-server
+#          - snmp-server community private group network-admin
