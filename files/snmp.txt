@@ -1,1 +1,2 @@
 snmp-server community private group network-admin
+snmp-server community public group network-operator
