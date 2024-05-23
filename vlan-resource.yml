@@ -30,9 +30,9 @@
 
     - name: Show running config on trunk ether1/10
       cisco.nxos.nxos_command:
-        commands: show run int eth1/10 | begin interface
+        commands: show run int eth1/10
       register: trunk_output
 
     - name: Display running config on trunk ether1/10
       ansible.builtin.debug:
-        var: trunk_output.stdout_lines
+        var: trunk_output.stdout_lines[,-2]
