@@ -6,8 +6,8 @@
     vlans:
       - vlan_id: 10
         name: web
-      - vlan_id: 20
-        name: app
+      # - vlan_id: 20
+      #   name: app
 
   tasks:
     - name: Create VLANs
