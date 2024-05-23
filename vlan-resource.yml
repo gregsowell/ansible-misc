@@ -1,0 +1,17 @@
+---
+- name: Create VLANs on DC switches that are passed as extra vars
+  hosts: sw1
+  gather_facts: false
+  vars:
+    vlans:
+      - vlan_id: 10
+        name: web
+      - vlan_id: 20
+        name: app
+
+  tasks:
+    - name: Create VLANs
+      cisco.nxos.nxos_vlans:
+        config: "{{ vlans }}"
+
+    
