@@ -14,9 +14,9 @@
       cisco.nxos.nxos_vlans:
         config: "{{ vlans }}"
 
-    - name: some filter testing
-      ansible.builtin.debug:
-        var: vlans | map(attribute='vlan_id') | flatten #| list 
+    # - name: some filter testing
+    #   ansible.builtin.debug:
+    #     var: vlans | map(attribute='vlan_id') | flatten #| list 
 
     # Ethernet1/10
     - name: Assign vlans to the vlan allow list on the trunk port
@@ -24,5 +24,6 @@
         config:
           - name: Ethernet1/10
             trunk:
-              allowed_vlans: "{{ vlans | map(attribute='vlan_id') | list }}"
-#      loop: "{{ vlans }}" 
+#              allowed_vlans: "{{ vlans | map(attribute='vlan_id') | list }}"
+              allowed_vlans: "{{ item.vlan_id }}"
+      loop: "{{ vlans }}" 
