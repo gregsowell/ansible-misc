@@ -16,7 +16,7 @@
 
     # Ethernet1/10
     - name: Assign vlans to the vlan allow list on the trunk port
-      cisco.nxos.nxos_l2_interface:
+      cisco.nxos.nxos_l2_interfaces:
         config:
           - name: Ethernet1/10
             trunk:
