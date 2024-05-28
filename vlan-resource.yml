@@ -30,7 +30,7 @@
 
     - name: Show running config on trunk ether1/10
       cisco.nxos.nxos_command:
-        commands: 'show run int eth1/10 | inc switchport trunk'
+        commands: 'show run int eth1/10 | inc switchport'
       register: trunk_output
 
     - name: Display running config on trunk ether1/10
