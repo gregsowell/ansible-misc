@@ -35,5 +35,6 @@
 
     - name: Display running config on trunk ether1/10
       ansible.builtin.debug:
-        var: trunk_output.stdout_lines[0] | string | split('",') #[-2:]
+        var: trunk_output.stdout_lines
+        # var: trunk_output.stdout_lines[0] | string | split('",') #[-2:]
         # msg: "{{ trunk_output.stdout_lines[5::1] }}"
