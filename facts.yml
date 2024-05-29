@@ -15,7 +15,7 @@
       ansible.builtin.debug:
         var: facts
 
-    - name: Display message when OS version is not required version
+    - name: "Display message when OS version is not {{ required_version }}"
       when: facts.ansible_facts.ansible_net_version != required_version
       ansible.builtin.debug:
         msg: "FAILURE-The OS version is {{ facts.ansible_facts.ansible_net_version }}"
