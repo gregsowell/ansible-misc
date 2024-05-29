@@ -5,7 +5,8 @@
   tasks:
     - name: Gather facts from the switch
       cisco.nxos.nxos_facts:
-        gather_subset: all
+        # gather_subset: all
+        gather_network_resources: all
       register: facts
 
     - name: Display facts
