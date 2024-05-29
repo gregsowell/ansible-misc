@@ -6,7 +6,7 @@
     - name: Gather facts from the switch
       cisco.nxos.nxos_facts:
         # gather_subset: all
-        gather_network_resources: acls
+        gather_network_resources: snmp_server
       register: facts
 
     - name: Display facts
