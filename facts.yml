@@ -1,0 +1,12 @@
+---
+- name: Gather facts from our switch and perform some conditional tests
+  hosts: sw1
+  gather_facts: false
+  tasks:
+    - name: Gather facts from the switch
+      cisco.nxos.nxos_facts:
+      register: facts
+
+    - name: Display facts
+      ansible.builtin.debug:
+        var: facts
