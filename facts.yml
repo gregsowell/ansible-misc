@@ -2,8 +2,8 @@
 - name: Gather facts from our switch and perform some conditional tests
   hosts: sw1
   gather_facts: false
-  # vars:
-  #   required_version: 9.3(3)
+  vars:
+    required_version: 9.3(3)
   tasks:
     - name: Gather facts from the switch
       cisco.nxos.nxos_facts:
@@ -11,9 +11,9 @@
         gather_network_resources: snmp_server
       register: facts
 
-    - name: Display facts
-      ansible.builtin.debug:
-        var: facts
+    # - name: Display facts
+    #   ansible.builtin.debug:
+    #     var: facts
 
     - name: Create required_version variable
       set_fact:
