@@ -11,13 +11,13 @@
         gather_network_resources: snmp_server
       register: facts
 
-    # - name: Display facts
-    #   ansible.builtin.debug:
-    #     var: facts
+    - name: Display facts
+      ansible.builtin.debug:
+        var: facts
 
-    - name: Create required_version variable
-      set_fact:
-        required_version: 9.3(3)
+    # - name: Create required_version variable
+    #   set_fact:
+    #     required_version: 9.3(3)
 
     - name: "Display message when OS version is {{ required_version }}"
       when: facts.ansible_facts.ansible_net_version == required_version
