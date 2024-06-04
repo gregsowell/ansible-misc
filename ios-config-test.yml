@@ -1,6 +1,6 @@
 ---
 - name: Quick config test from ios router
-  name: clab-test-csr1
+  hosts: clab-test-csr1
   gather_facts: false
   tasks:
     - name: Run show int brief
