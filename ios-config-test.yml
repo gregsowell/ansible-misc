@@ -8,6 +8,6 @@
         commands: show ip int brief
       register: output
 
-    - name: Display show ip int brief
+    - name: Display show ip int brief 
       ansible.builtin.debug:
         var: output.stdout_lines
