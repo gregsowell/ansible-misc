@@ -1,0 +1,13 @@
+---
+- name: Quick config test from ios router
+  name: clab-test-csr1
+  gather_facts: false
+  tasks:
+    - name: Run show int brief
+      cisco.ios.ios_command:
+        commands: show ip int brief
+      register: output
+
+    - name: Display show ip int brief
+      ansible.builtin.debug:
+        var: output.stdout_lines
