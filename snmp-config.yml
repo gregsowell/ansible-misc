@@ -6,8 +6,8 @@
     - name: Configure SNMP with the config module
       cisco.ios.ios_config:
         lines:
-          - snmp-server community public group network-operator
-          - snmp-server community private group network-admin
+          - snmp-server community public
+          - snmp-server community private
 
     - name: Find current SNMP configuration
       cisco.ios.ios_command:
