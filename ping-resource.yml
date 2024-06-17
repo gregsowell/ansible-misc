@@ -1,5 +1,5 @@
 ---
-- name: SNMP updates
+- name: Ping remote hosts
   hosts: rtr1
   gather_facts: false
   vars: 
