@@ -1,0 +1,32 @@
+---
+- name: Create VLANs on DC switches
+  hosts: rtr1
+  gather_facts: false
+  vars:
+    vlans:
+      - vlan_id: 10
+        name: web
+      - vlan_id: 20
+        name: app
+
+  tasks:
+    - name: Create VLANs
+      cisco.ios.ios_vlans:
+        config: "{{ vlans }}"
+
+    # - name: Assign vlans to the vlan allow list on the trunk port
+    #   cisco.ios.ios_l2_interfaces:
+    #     config:
+    #       - name: Ethernet1/10
+    #         trunk:
+    #           allowed_vlans: "{{ item.vlan_id }}"
+    #   loop: "{{ vlans }}" 
+
+    # - name: Show running config on trunk ether1/10
+    #   cisco.ios.ios_command:
+    #     commands: 'show run int eth1/10 | inc switchport'
+    #   register: trunk_output
+
+    # - name: Display running config on trunk ether1/10
+    #   ansible.builtin.debug:
+    #     var: trunk_output.stdout_lines
