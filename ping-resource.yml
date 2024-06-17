@@ -13,6 +13,7 @@
         dest: "{{ item }}"
         count: 2
       loop: "{{ remote_hosts }}"
+      ignore_errors: true
       register: ping_results
 
     - name: Display ping results
