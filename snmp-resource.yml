@@ -4,15 +4,15 @@
   gather_facts: false
 
   tasks:
-    - name: Replace existing SNMP configuration with the nxos_snmp_server module
+    - name: Parse config
       cisco.ios.ios_snmp_server:
-        config:
-          communities:
-            # - name: public
-            #   ro: true
-            - name: private
-              rw: true
-        state: replaced 
+        running_config: "{{ lookup('file', 'files/snmp.txt') }}"
+        state: parsed
+      register: parsed
+
+    - name: Display parsed SNMP configuration
+      ansible.builtin.debug:
+        var: parsed
 
     - name: Find current SNMP configuration
       cisco.ios.ios_command:
