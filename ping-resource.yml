@@ -20,3 +20,4 @@
       ansible.builtin.debug:
         # var: ping_results.results
         msg: "{{ item.invocation.dest }} has packetloss of {{ item.packet_loss }}"
+      loop: "{{ ping_results.results }}"
