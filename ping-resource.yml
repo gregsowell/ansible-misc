@@ -19,5 +19,9 @@
     - name: Display ping results
       ansible.builtin.debug:
         # var: ping_results.results
-        msg: "{{ item.invocation.module_args.dest }} has packetloss of {{ item.packet_loss }}"
+        # msg: "{{ item.invocation.module_args.dest }} has packetloss of {{ item.packet_loss }}"
+        # msg: "{{ item.invocation }} | json query('[].')"
+        var: item.packet_loss
       loop: "{{ ping_results.results }}"
+      loop_control:
+        label: "{{ item.invocation.module_args.dest }}"
