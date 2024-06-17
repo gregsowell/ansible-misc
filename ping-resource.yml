@@ -1,0 +1,20 @@
+---
+- name: SNMP updates
+  hosts: rtr1
+  gather_facts: false
+  vars: 
+    remote_hosts:
+      - 8.8.8.8
+      - 10.0.0.15
+
+  tasks:
+    - name: Test reachability to remote_hosts
+      cisco.ios.ios_ping:
+        dest: "{{ item }}"
+        count: 2
+      loop: "{{ remote_hosts }}"
+      register: ping_results
+
+    - name: Display ping results
+      ansible.builtin.debug:
+        var: ping_results.results
