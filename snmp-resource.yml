@@ -1,0 +1,24 @@
+---
+- name: SNMP updates
+  hosts: rtr1
+  gather_facts: false
+
+  tasks:
+    - name: Replace existing SNMP configuration with the nxos_snmp_server module
+      cisco.ios.ios_snmp_server:
+        config:
+          communities:
+            - name: public
+              ro: true
+            - name: private
+              rw: true
+        state: replaced 
+
+    - name: Find current SNMP configuration
+      cisco.ios.ios_command:
+        commands: show run | inc community
+      register: snmp_output
+
+    - name: Display current SNMP configuration
+      ansible.builtin.debug:
+        var: snmp_output.stdout_lines
