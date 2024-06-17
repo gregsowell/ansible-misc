@@ -8,13 +8,18 @@
       - 10.0.0.15
 
   tasks:
-    - name: Test reachability to remote_hosts
-      cisco.ios.ios_ping:
-        dest: "{{ item }}"
-        count: 2
+    # - name: Test reachability to remote_hosts
+    #   cisco.ios.ios_ping:
+    #     dest: "{{ item }}"
+    #     count: 2
+    #   loop: "{{ remote_hosts }}"
+    #   ignore_errors: true
+    #   register: ping_results
+
+    - name: Test pings to remote_hosts
+      cisco.ios.ios_command:
+        commands: "ping {{ item }} repeat 2"
       loop: "{{ remote_hosts }}"
-      ignore_errors: true
-      register: ping_results
 
     - name: Display ping results
       ansible.builtin.debug:
@@ -25,4 +30,4 @@
       loop: "{{ ping_results.results }}"
       loop_control:
         label: "{{ item.invocation.module_args.dest }}"
-      no_log: true
+
