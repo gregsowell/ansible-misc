@@ -8,8 +8,8 @@
       cisco.ios.ios_snmp_server:
         config:
           communities:
-            - name: public
-              ro: true
+            # - name: public
+            #   ro: true
             - name: private
               rw: true
         state: replaced 
