@@ -25,3 +25,4 @@
       loop: "{{ ping_results.results }}"
       loop_control:
         label: "{{ item.invocation.module_args.dest }}"
+      no_log: true
