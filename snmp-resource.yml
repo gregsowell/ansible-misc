@@ -14,6 +14,11 @@
       ansible.builtin.debug:
         var: parsed
 
+    - name: Replace existing SNMP configuration with the ios_snmp_server module
+      cisco.ios.ios_snmp_server:
+        config: "{{ parsed.parsed }}"
+        state: replaced 
+
     - name: Find current SNMP configuration
       cisco.ios.ios_command:
         commands: show run | inc community
