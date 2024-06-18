@@ -3,7 +3,8 @@
   hosts: rtr1
   gather_facts: false
   vars:
-    required_version: 16.06.01
+#    required_version: 16.06.01
+    required_version: 16.06.02
   tasks:
     - name: Gather facts from the router
       cisco.ios.ios_facts:
