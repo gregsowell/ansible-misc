@@ -25,7 +25,7 @@
       ansible.builtin.debug:
         msg: "The OS version is {{ facts.ansible_facts.ansible_net_version }}"
 
-    # - name: "Display message when OS version is not {{ required_version }} and MD5 SNMP Auth in use"
-    #   when: facts.ansible_facts.ansible_net_version != required_version and facts.ansible_facts.ansible_network_resources.snmp_server.users.auth[0].authentication.algorithm == "md5"
-    #   ansible.builtin.debug:
-    #     msg: "FAILURE-The OS version is {{ facts.ansible_facts.ansible_net_version }} and using MD5 SNMP Auth"
+    - name: "Display message when OS version is not {{ required_version }} and public community is ro"
+      when: facts.ansible_facts.ansible_net_version != required_version and facts.ansible_facts.ansible_network_resources.snmp_server.communities[1].ro == "true"
+      ansible.builtin.debug:
+        msg: "FAILURE-The OS version is {{ facts.ansible_facts.ansible_net_version }} and public community is RO"
