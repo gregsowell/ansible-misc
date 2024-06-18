@@ -26,7 +26,7 @@
       ansible.builtin.debug:
         msg: "The OS version is {{ facts.ansible_facts.ansible_net_version }}"
 
-    - name: "Display message when OS version is not {{ required_version }} and public community is ro"
-      when: facts.ansible_facts.ansible_net_version != required_version and facts.ansible_facts.ansible_network_resources.snmp_server.communities[1].name == "public"
+    - name: "Display message when OS version is not {{ required_version }} and public community is enabled"
+      when: facts.ansible_facts.ansible_net_version != required_version and facts.ansible_facts.ansible_network_resources.snmp_server.communities[1].name | default("tacos")== "public"
       ansible.builtin.debug:
         msg: "FAILURE-The OS version is {{ facts.ansible_facts.ansible_net_version }} and public community is RO"
