@@ -1,0 +1,19 @@
+---
+- name: Chimes Clay site 1 simulate failure and call esd
+  hosts: Greg-rocky9
+  gather_facts: false
+  vars:
+  tasks:
+    - name: P1
+      ansible.builtin.pause:
+        seconds: 4
+
+    - name: Simulate fire
+      ansible.builtin.template:
+        src: files/chimes-clay-index.html.j2
+        dest: /usr/share/nginx/html/index.html
+      vars:
+        gif_num: 2
+
+    - name: Call a new playbook via ascender api
+    

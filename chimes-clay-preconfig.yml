@@ -1,0 +1,32 @@
+---
+- name: Setup nginx and configure simple index.html file
+  hosts: Greg-rocky9
+  gather_facts: false
+  vars:
+    gif_num: 1
+  tasks:
+    - name: Install nginx via dnf module
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      # register: nginx_installed
+      # ignore_errors: true
+
+    - name: Configure index.html file from template
+      ansible.builtin.template:
+        src: files/chimes-clay-index.html.j2
+        dest: /usr/share/nginx/html/index.html
+      notify: Restart nginx
+
+    - name: Configure nginx service to be enabled and running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+      # notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

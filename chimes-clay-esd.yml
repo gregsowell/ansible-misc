@@ -1,0 +1,31 @@
+---
+- name: Chimes Clay site 1 emergency shutdown procedures
+  hosts: Greg-rocky9
+  gather_facts: false
+  vars:
+  tasks:
+    - name: P1
+      ansible.builtin.pause:
+        seconds: 4
+
+    - name: Shutdown primary pumps
+      ansible.builtin.template:
+        src: files/chimes-clay-index.html.j2
+        dest: /usr/share/nginx/html/index.html
+      vars:
+        gif_num: 3
+
+    - name: P2
+      ansible.builtin.pause:
+        seconds: 4
+
+    - name: Shutdown site wells
+      ansible.builtin.template:
+        src: files/chimes-clay-index.html.j2
+        dest: /usr/share/nginx/html/index.html
+      vars:
+        gif_num: 4
+
+    - name: Send emergency notification
+      ansible.builtin.debug:
+        msg: "Emergency shutdown email/text sent to all site and emergency personnel"
