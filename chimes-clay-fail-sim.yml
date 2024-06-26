@@ -15,5 +15,4 @@
       vars:
         gif_num: 2
 
-    - name: Call a new playbook via ascender api
-    
+    # - name: Call a new playbook via ascender api
