@@ -6,7 +6,7 @@
     ascender_host: "http://localhost:8000"
     ascender_username: "{{ gen1_user }}"
     ascender_password: "{{ gen1_pword}}"
-    
+
   tasks:
     # - name: P1
     #   ansible.builtin.pause:
@@ -19,10 +19,10 @@
       vars:
         gif_num: 2
 
-    - name: Call a new playbook via ascender api
-      job_launch:
-        job_template: "Chimes Clay Emergency Shutdown"
-      # register: job
+    # - name: Call a new playbook via ascender api
+    #   job_launch:
+    #     job_template: "Chimes Clay Emergency Shutdown"
+    #   # register: job
 
     - name: Launch the job template
       uri:
