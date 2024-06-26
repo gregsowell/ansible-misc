@@ -18,6 +18,17 @@
         dest: /usr/share/nginx/html/index.html
       notify: Restart nginx
 
+    - name: Copy gif files to /usr/share/nginx/html
+      ansible.builtin.copy:
+        src: "files/{{ gif_num }}.gif"
+        dest: /usr/share/nginx/html/
+      # notify: Restart nginx
+      loop: 
+        - 1
+        - 2
+        - 3
+        - 4
+
     - name: Configure nginx service to be enabled and running
       ansible.builtin.service:
         name: nginx
