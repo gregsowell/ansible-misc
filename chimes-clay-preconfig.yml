@@ -20,7 +20,7 @@
 
     - name: Copy gif files to /usr/share/nginx/html
       ansible.builtin.copy:
-        src: "files/{{ gif_num }}.gif"
+        src: "files/{{ item }}.gif"
         dest: /usr/share/nginx/html/
       # notify: Restart nginx
       loop: 
