@@ -3,6 +3,10 @@
   hosts: Greg-rocky9
   gather_facts: false
   vars:
+    ascender_host: "http://localhost:8000"
+    ascender_username: "{{ gen1_user }}"
+    ascender_password: "{{ gen1_pword}}"
+    
   tasks:
     # - name: P1
     #   ansible.builtin.pause:
@@ -19,3 +23,16 @@
       job_launch:
         job_template: "Chimes Clay Emergency Shutdown"
       # register: job
+
+    - name: Launch the job template
+      uri:
+        url: "{{ ascender_host }}/api/v2/job_templates/Chimes%20Clay%20Emergency%20Shutdown/launch/"
+        method: POST
+        user: "{{ ascender_username }}"
+        password: "{{ ascender_password }}"
+        force_basic_auth: yes
+        headers:
+          Content-Type: "application/json"
+        status_code: 201
+        body_format: json
+        body: "{}"
