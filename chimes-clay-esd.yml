@@ -4,9 +4,9 @@
   gather_facts: false
   vars:
   tasks:
-    - name: P1
-      ansible.builtin.pause:
-        seconds: 4
+    # - name: P1
+    #   ansible.builtin.pause:
+    #     seconds: 4
 
     - name: Shutdown primary pumps
       ansible.builtin.template:

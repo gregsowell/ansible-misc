@@ -4,9 +4,9 @@
   gather_facts: false
   vars:
   tasks:
-    - name: P1
-      ansible.builtin.pause:
-        seconds: 4
+    # - name: P1
+    #   ansible.builtin.pause:
+    #     seconds: 4
 
     - name: Simulate fire
       ansible.builtin.template:
@@ -15,4 +15,7 @@
       vars:
         gif_num: 2
 
-    # - name: Call a new playbook via ascender api
+    - name: Call a new playbook via ascender api
+      job_launch:
+        job_template: "Chimes Clay Emergency Shutdown"
+      # register: job
