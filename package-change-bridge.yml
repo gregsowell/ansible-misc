@@ -1,0 +1,74 @@
+---
+- name: Playbook to monitor packages in a repository and alert when there's a new package
+  hosts: Greg-bridge-monitor
+  gather_facts: false
+  vars:
+    # Where will the package files be stored
+    file_location: /root
+
+    # Email settings
+    email_subject: Repository Package Version Change
+    email_host: relay.gregsowell.com
+    email_from: system@gregsowell.com
+    email_to: greg@gregsowell.com
+
+  tasks:
+    - name: Use dnf shell command to get a list of all packages in repository
+      ansible.builtin.shell: "dnf list available | tail -n +3 > {{ file_location }}/available-packages-temp.txt"
+      # register: installed_packages
+      # changed_when: false
+
+    # - name: Debug installed_packages variable
+    #   ansible.builtin.debug:
+    #     var: installed_packages.stdout_lines
+
+    - name: Check if available-packages.txt file exists
+      ansible.builtin.stat:
+        path: "{{ file_location }}/available-packages.txt"
+      register: file_check
+
+    - name: Perform block if file_check file doesn't exist
+      when: file_check.stat.exists == false
+      block:
+        - name: Copy available-packages-temp.txt to available-packages.txt
+          ansible.builtin.shell: "cp {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+
+    - name: Compare available-packages-temp.txt and available-packages.txt
+      ansible.builtin.shell: "diff {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+      register: package_change
+      changed_when: false
+      failed_when: package_change.rc != 1 and package_change.rc != 0
+
+    - name: Block to process when package_change is not empty
+      when: package_change.stdout | default("") != ""
+      block:
+        - name: Copy package files from remote host to localhost
+          ansible.builtin.fetch:
+            src: "{{ item }}"
+            dest: "{{ playbook_dir }}/"
+            flat: yes
+          loop: 
+            - "{{ file_location }}/available-packages-temp.txt"
+            - "{{ file_location }}/available-packages.txt"
+
+        - name: Copy available-packages-temp.txt to available-packages.txt
+          ansible.builtin.copy:
+            src: "{{ file_location }}/available-packages-temp.txt"
+            dest: "{{ file_location }}/available-packages.txt"
+            force: yes
+            remote_src: true
+
+        - name: Send Email
+          community.general.mail:
+            host: "{{ email_host }}"
+            from: "{{ email_from }}"
+            port: 25
+            to: "{{ email_to }}"
+            subject: "[Ansible] {{ email_subject }}"
+            body: "{{ package_change.stdout_lines }}"
+            attach: 
+              - "{{ playbook_dir }}/available-packages-temp.txt"
+              - "{{ playbook_dir }}/available-packages.txt"
+            subtype: html
+          delegate_to: localhost
+          run_once: true
