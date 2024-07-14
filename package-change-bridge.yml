@@ -13,8 +13,8 @@
     email_to: greg@gregsowell.com
 
   tasks:
-    - name: Use dnf shell command to get a list of all packages in repository
-      ansible.builtin.shell: "dnf list available | tail -n +3 > {{ file_location }}/available-packages-temp.txt"
+    - name: Use yum shell command to get a list of all packages in a specific repository
+      ansible.builtin.shell: "yum list available | tail -n +3 | awk '{if ($3 ~ /bridge/) print $0}' > {{ file_location }}/available-packages-temp.txt"
       # register: installed_packages
       # changed_when: false
 
