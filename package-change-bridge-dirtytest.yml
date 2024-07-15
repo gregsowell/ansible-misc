@@ -16,5 +16,5 @@
       when: ">" in item
       ansible.builtin.debug:
         var: item
-      loop: package_change.stdout_lines
+      loop: "{{ package_change.stdout_lines }}"
 
