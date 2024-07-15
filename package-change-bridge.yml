@@ -98,7 +98,7 @@
             body: "{{ lookup('template', 'email_template.j2') }}"
             attach: 
               - "{{ playbook_dir }}/available-packages-temp.txt"
-              - "{{ playbook_dir }}/available-packages.txt"
+              # - "{{ playbook_dir }}/available-packages.txt"
               - "{{ playbook_dir }}/changelog.txt"
             subtype: html
           delegate_to: localhost
