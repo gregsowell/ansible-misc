@@ -1,6 +1,6 @@
 ---
 - name: Install CIQ Depot on Centos7 hosts
-  hosts: all
+  hosts: Greg-depot-ansible-test
   become: yes
   gather_facts: false
   vars:
