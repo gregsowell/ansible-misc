@@ -20,7 +20,9 @@
 
     - name: Issue the yum changelog on changed packages
       when: "'>' in item"
-      ansible.builtin.shell: "yum changelog {{ (item | regex_search('> ([^\\.]*)\\.', '\\1') | default([''])[0]) }}"
+      vars:
+        package_name: "{{ item | regex_search('> ([^\\.]*)\\.', '\\1') | default([''])[0] }}"
+      ansible.builtin.shell: "yum changelog {{ package_name }}"
       loop: "{{ package_change.stdout_lines }}"
       register: changelog_output
 
