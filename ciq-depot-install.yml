@@ -1,0 +1,26 @@
+---
+- name: Install CIQ Depot on my Centos7 hosts
+  hosts: all
+  become: yes
+  gather_facts: false
+  vars:
+    # These are supplied by CIQ
+    ciq_depot_user: "greg"
+    ciq_depot_token: "1234567890"
+
+    disable_old_repos: false
+
+  tasks:
+    - name: Install the CIQ Depot RPM
+      ansible.builtin.yum:
+        name: https://depot.ciq.com/public/files/depot-client/depot/depot.x86_64.rpm
+        state: latest
+
+    - name: Register the host with CIQ Depot
+      ansible.builtin.shell: "depot register -u {{ ciq_depot_user }} -t {{ ciq_depot_token }}"
+      register: depot_register
+      failed_when: depot_register.stdout != "Registered."
+
+    - name: Disable old repos when flag set
+      when: disable_old_repos
+      ansible.builtin.shell: "yum-config-manager --disable base updates extras os"
