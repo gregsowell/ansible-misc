@@ -46,22 +46,6 @@
     - name: Block to process when package_change is not empty
       when: package_change.stdout | default("") != ""
       block:
-        - name: Copy package files from remote host to localhost
-          ansible.builtin.fetch:
-            src: "{{ item }}"
-            dest: "{{ playbook_dir }}/"
-            flat: yes
-          loop: 
-            - "{{ file_location }}/available-packages-temp.txt"
-            - "{{ file_location }}/available-packages.txt"
-
-        - name: Copy available-packages-temp.txt to available-packages.txt
-          ansible.builtin.copy:
-            src: "{{ file_location }}/available-packages-temp.txt"
-            dest: "{{ file_location }}/available-packages.txt"
-            force: yes
-            remote_src: true
-
         - name: Delete the old changelog.txt file
           ansible.builtin.file:
             path: "{{ file_location }}/changelog.txt"
@@ -78,7 +62,6 @@
         - name: Create the changelog variable
           when: item.changed == true
           set_fact:
-            # changelog: "{{ changelog | default('') + item.stdout | regex_replace('^(.*?========)', '') }}"
             changelog: "{{ changelog | default('') + item.stdout | regex_replace('(?s)^.*?(={4,}.*\n)', '\\1') }} \n\n"
           loop: "{{ changelog_output.results }}"
           
@@ -86,6 +69,23 @@
           ansible.builtin.copy:
             content: "{{ changelog }}"
             dest: "{{ file_location }}/changelog.txt"
+
+        - name: Copy package files from remote host to localhost
+          ansible.builtin.fetch:
+            src: "{{ item }}"
+            dest: "{{ playbook_dir }}/"
+            flat: yes
+          loop: 
+            - "{{ file_location }}/available-packages-temp.txt"
+            - "{{ file_location }}/available-packages.txt"
+            - "{{ file_location }}/changelog.txt"
+
+        - name: Copy available-packages-temp.txt to available-packages.txt
+          ansible.builtin.copy:
+            src: "{{ file_location }}/available-packages-temp.txt"
+            dest: "{{ file_location }}/available-packages.txt"
+            force: yes
+            remote_src: true
 
         - name: Send Email
           community.general.mail:
