@@ -62,6 +62,31 @@
             force: yes
             remote_src: true
 
+        - name: Delete the old changelog.txt file
+          ansible.builtin.file:
+            path: "{{ file_location }}/changelog.txt"
+            state: absent
+
+        - name: Issue the yum changelog on changed packages
+          when: "'>' in item"
+          vars:
+            package_name: "{{ (item | regex_search('> ([^\\.]*)\\.', '\\1') | default(['']))[0] }}"
+          ansible.builtin.shell: "yum changelog {{ package_name }}"
+          loop: "{{ package_change.stdout_lines }}"
+          register: changelog_output
+
+        - name: Create the changelog variable
+          when: item.changed == true
+          set_fact:
+            # changelog: "{{ changelog | default('') + item.stdout | regex_replace('^(.*?========)', '') }}"
+            changelog: "{{ changelog | default('') + item.stdout | regex_replace('(?s)^.*?(={4,}.*\n)', '\\1') }} \n\n"
+          loop: "{{ changelog_output.results }}"
+          
+        - name: Write contents of changelog with changes to a file
+          ansible.builtin.copy:
+            content: "{{ changelog }}"
+            dest: "{{ file_location }}/changelog.txt"
+
         - name: Send Email
           community.general.mail:
             host: "{{ email_host }}"
@@ -74,6 +99,7 @@
             attach: 
               - "{{ playbook_dir }}/available-packages-temp.txt"
               - "{{ playbook_dir }}/available-packages.txt"
+              - "{{ playbook_dir }}/changelog.txt"
             subtype: html
           delegate_to: localhost
           run_once: true
