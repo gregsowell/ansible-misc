@@ -69,7 +69,7 @@
             port: 25
             to: "{{ email_to }}"
             subject: "[Ansible] {{ email_subject }}"
-            body: "{{ package_change.stdout_lines | to_nice_yaml }}"
+            body: "{{ package_change.stdout_lines | to_nice_yaml | replace('- ', '\n') }}"
             attach: 
               - "{{ playbook_dir }}/available-packages-temp.txt"
               - "{{ playbook_dir }}/available-packages.txt"
