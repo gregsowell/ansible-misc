@@ -42,7 +42,7 @@
     - name: create the changelog variable
       when: item.changed == true
       set_fact:
-        changelog: "{{ changelog | default('') + item.stdout }}"
+        changelog: "{{ changelog | default('') + item.stdout | regex_replace('^(.*?========)', '') }}"
       loop: "{{ changelog_output.results }}"
       
 
