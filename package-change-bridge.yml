@@ -69,7 +69,8 @@
             port: 25
             to: "{{ email_to }}"
             subject: "[Ansible] {{ email_subject }}"
-            body: "{{ package_change.stdout_lines | join('\n') }}"
+            # body: "{{ package_change.stdout_lines }}"
+            body: "{{ lookup('template', 'email_template.j2', variables={'stdout_lines': package_change.stdout_lines}) }}"
             attach: 
               - "{{ playbook_dir }}/available-packages-temp.txt"
               - "{{ playbook_dir }}/available-packages.txt"
