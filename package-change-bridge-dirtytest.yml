@@ -15,6 +15,6 @@
     - name: Debug package_change variable when line contains ">"
       when: "'>' in item"
       ansible.builtin.debug:
-        var: item | regex_search('> ([^\\.]*)\\.', '\\1')
+        msg: "{{ item | regex_search('> ([^\\.]*)\\.', '\\1') }}"
       loop: "{{ package_change.stdout_lines }}"
 
