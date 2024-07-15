@@ -38,3 +38,15 @@
       # loop: "{{ changelog_output.results[0] }}"
       loop: "{{ changelog_output.results }}"
 #      when: item.stdout != ""
+
+    - name: create the changelog variable
+      when: item.changed == true
+      set_fact:
+        changelog: "{{ changelog | default('') + item.stdout_lines }}"
+      loop: "{{ changelog_output.results }}"
+      
+
+    - name: Write contents of changelog with changes to a file
+      ansible.builtin.copy:
+        content: "{{ changelog }}"
+        dest: "{{ file_location }}/changelog.txt"
