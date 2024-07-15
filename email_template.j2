@@ -7,7 +7,7 @@
       <th>Version</th>
       <th>Repository</th>
     </tr>
-    {% for line in stdout_lines %}
+    {% for line in package_change.stdout_lines %}
     <tr>
       {% set parts = line.split() %}
       <td>{{ parts[0] }}</td>
