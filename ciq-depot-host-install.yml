@@ -8,7 +8,7 @@
     ciq_depot_user: "greg"
     ciq_depot_token: "1234567890"
 
-    # The flag to remove all old repositories from this host
+    # The flag to remove all old repositories from this host.  Off by default
     disable_old_repos: false
     repo_disable_list:
       - base
