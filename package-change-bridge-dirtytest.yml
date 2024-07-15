@@ -33,5 +33,6 @@
     - name: Debug just items I care about
       ansible.builtin.debug:
         msg: item
-      loop: "{{ changelog_output.results[0] | dict2items}}"
+      # loop: "{{ changelog_output.results[0] | dict2items}}"
+      loop: "{{ changelog_output.results[0] }}"
 #      when: item.stdout != ""
