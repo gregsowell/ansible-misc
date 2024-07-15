@@ -2,11 +2,14 @@
 <body>
   <table border="1">
     <tr>
-      <th>Entry</th>
+      <th>Before then After</th>
+    </tr>
+    <tr>
+      <td>Before</td>
     </tr>
     {% for line in package_change.stdout_lines %}
     <tr>
-      <td>{{ line }}</td>
+      <td>{% if line == "---" %}After{% else %}{{ line }}{% endif %}</td>
     </tr>
     {% endfor %}
   </table>
