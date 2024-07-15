@@ -1,0 +1,20 @@
+---
+- name: Playbook to monitor packages in a repository and alert when there's a new package
+  hosts: Greg-bridge-monitor
+  gather_facts: false
+  vars:
+    # Where will the package files be stored
+    file_location: /root
+  tasks:
+    - name: Compare available-packages-temp.txt and available-packages.txt
+      ansible.builtin.shell: "diff {{ file_location }}/available-packages-temp.txt {{ file_location }}/available-packages.txt"
+      register: package_change
+      changed_when: false
+      failed_when: package_change.rc != 1 and package_change.rc != 0
+
+    - name: Debug package_change variable when line contains ">"
+      when: ">" in item
+      ansible.builtin.debug:
+        var: item
+      loop: package_change.stdout_lines
+
