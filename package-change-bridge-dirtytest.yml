@@ -43,7 +43,7 @@
       when: item.changed == true
       set_fact:
         # changelog: "{{ changelog | default('') + item.stdout | regex_replace('^(.*?========)', '') }}"
-        changelog: "{{ changelog | default('') + item.stdout | regex_replace('.*===\\n', '') }}"
+        changelog: "{{ changelog | default('') + item.stdout | regex_replace('.*===.*\\n', '', multiline=True) }}"
       loop: "{{ changelog_output.results }}"
       
 
