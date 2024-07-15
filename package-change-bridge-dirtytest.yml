@@ -18,3 +18,12 @@
         msg: "{{ item | regex_search('> ([^\\.]*)\\.', '\\1') }}"
       loop: "{{ package_change.stdout_lines }}"
 
+    - name: Issue the yum changelog on changed packages
+      when: "'>' in item"
+      ansible.builtin.shell: "yum changelog {{ item | regex_search('> ([^\\.]*)\\.', '\\1') }}"
+      loop: "{{ package_change.stdout_lines }}"
+      register: changelog_output
+
+    - name: Debug changelog_output variable
+      ansible.builtin.debug:
+        var: changelog_output
