@@ -1,5 +1,5 @@
 ---
-- name: Install CIQ Depot on my Centos7 hosts
+- name: Install CIQ Depot on Centos7 hosts
   hosts: all
   become: yes
   gather_facts: false
