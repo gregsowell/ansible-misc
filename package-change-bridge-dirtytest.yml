@@ -29,3 +29,9 @@
     - name: Debug changelog_output variable
       ansible.builtin.debug:
         var: changelog_output
+
+    - name: Debug just items I care about
+      ansible.builtin.debug:
+        msg: item
+      loop: "{{ changelog_output.results[0] | dict2items}}"
+#      when: item.stdout != ""
