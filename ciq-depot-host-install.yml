@@ -10,6 +10,11 @@
 
     # The flag to remove all old repositories from this host
     disable_old_repos: false
+    repo_disable_list:
+      - base
+      - updates
+      - extras
+      - os
 
   tasks:
     - name: Install the CIQ Depot RPM
@@ -24,4 +29,7 @@
 
     - name: Disable old repos when flag set
       when: disable_old_repos
-      ansible.builtin.shell: "yum-config-manager --disable base updates extras os"
+      ansible.builtin.yum_repository:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ repo_disable_list }}"
