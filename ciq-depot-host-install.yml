@@ -20,7 +20,7 @@
     - name: Register the host with CIQ Depot
       ansible.builtin.shell: "depot register -u {{ ciq_depot_user }} -t {{ ciq_depot_token }}"
       register: depot_register
-      failed_when: depot_register.stdout != "Registered." or depot_register.rc != 255
+      failed_when: depot_register.stdout != "Registered." and depot_register.rc != 255
 
     - name: Disable old repos when flag set
       when: disable_old_repos
