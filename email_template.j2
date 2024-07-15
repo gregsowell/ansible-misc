@@ -2,18 +2,11 @@
 <body>
   <table border="1">
     <tr>
-      <th>Change</th>
-      <th>Package</th>
-      <th>Version</th>
-      <th>Repository</th>
+      <th>Entry</th>
     </tr>
     {% for line in package_change.stdout_lines %}
     <tr>
-      {% set parts = line.split() %}
-      <td>{{ parts[0] }}</td>
-      <td>{{ parts[1] }}</td>
-      <td>{{ parts[2] }}</td>
-      <td>{{ parts[3:] | join(' ') }}</td>
+      <td>{{ line }}</td>
     </tr>
     {% endfor %}
   </table>
