@@ -7,7 +7,7 @@
     file_location: /root
 
     # Email settings
-    email_subject: Repository Package Version Change
+    email_subject: Bridge Repository Package Version Change
     email_host: relay.gregsowell.com
     email_from: system@gregsowell.com
     email_to: greg@gregsowell.com
@@ -93,7 +93,7 @@
             from: "{{ email_from }}"
             port: 25
             to: "{{ email_to }}"
-            subject: "[Ansible] {{ email_subject }}"
+            subject: "{{ email_subject }}"
             # body: "{{ package_change.stdout_lines }}"
             body: "{{ lookup('template', 'email_template.j2') }}"
             attach: 
@@ -101,5 +101,24 @@
               - "{{ playbook_dir }}/available-packages.txt"
               - "{{ playbook_dir }}/changelog.txt"
             subtype: html
+          delegate_to: localhost
+          run_once: true
+
+    - name: Block to process when there is/are no new packages 
+      when: package_change.stdout | default("") == ""
+      block:
+        - name: Send Email
+          community.general.mail:
+            host: "{{ email_host }}"
+            from: "{{ email_from }}"
+            port: 25
+            to: "{{ email_to }}"
+            subject: "{{ email_subject }} - No Changes"
+            # body: "{{ lookup('template', 'email_template.j2') }}"
+            # attach: 
+            #   - "{{ playbook_dir }}/available-packages-temp.txt"
+            #   - "{{ playbook_dir }}/available-packages.txt"
+            #   - "{{ playbook_dir }}/changelog.txt"
+            # subtype: html
           delegate_to: localhost
           run_once: true
