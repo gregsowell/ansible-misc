@@ -31,7 +31,7 @@
         var: changelog_output
 
     - name: Debug just items I care about
-      when: item.changed == 'true'
+      # when: item.changed == 'true'
       ansible.builtin.debug:
         msg: "{{ item }}"
       # loop: "{{ changelog_output.results[0] | dict2items(key_name='changed', value_name='stdout_lines')}}"
