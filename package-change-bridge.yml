@@ -39,6 +39,10 @@
       changed_when: false
       failed_when: package_change.rc != 1 and package_change.rc != 0
 
+    - name: Debug package_change variable
+      ansible.builtin.debug:
+        var: package_change
+
     - name: Block to process when package_change is not empty
       when: package_change.stdout | default("") != ""
       block:
@@ -58,17 +62,17 @@
             force: yes
             remote_src: true
 
-        - name: Send Email
-          community.general.mail:
-            host: "{{ email_host }}"
-            from: "{{ email_from }}"
-            port: 25
-            to: "{{ email_to }}"
-            subject: "[Ansible] {{ email_subject }}"
-            body: "{{ package_change.stdout_lines }}"
-            attach: 
-              - "{{ playbook_dir }}/available-packages-temp.txt"
-              - "{{ playbook_dir }}/available-packages.txt"
-            subtype: html
-          delegate_to: localhost
-          run_once: true
+        # - name: Send Email
+        #   community.general.mail:
+        #     host: "{{ email_host }}"
+        #     from: "{{ email_from }}"
+        #     port: 25
+        #     to: "{{ email_to }}"
+        #     subject: "[Ansible] {{ email_subject }}"
+        #     body: "{{ package_change.stdout_lines }}"
+        #     attach: 
+        #       - "{{ playbook_dir }}/available-packages-temp.txt"
+        #       - "{{ playbook_dir }}/available-packages.txt"
+        #     subtype: html
+        #   delegate_to: localhost
+        #   run_once: true
