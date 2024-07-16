@@ -3,7 +3,7 @@
   hosts: nexus9k1
   gather_facts: false
   vars:
-    automation_username: "greg"
+    automation_username: "automation"
     # This data should really be supplied via a vaulted password
     key_content: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ6"
     
