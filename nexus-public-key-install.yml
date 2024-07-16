@@ -1,6 +1,6 @@
 ---
 - name: Configure a Cisco Nexus switch to utilize ssh public keys
-  hosts: Nexus9k1
+  hosts: nexus9k1
   gather_facts: false
   vars:
     automation_username: "greg"
