@@ -19,5 +19,5 @@
     - name: Add the public key to the Nexus switch
       cisco.nxos.nxos_user:
         name: "{{ automation_username }}"
-        ssh_key: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
+        sshkey: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
         state: present
