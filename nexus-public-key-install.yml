@@ -1,0 +1,23 @@
+---
+- name: Configure a Cisco Nexus switch to utilize ssh public keys
+  hosts: Nexus9k1
+  gather_facts: false
+  vars:
+    automation_username: "greg"
+    # This data should really be supplied via a vaulted password
+    key_content: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ6"
+    
+  tasks:
+    - name: Create the public key file for use with the nxos_user module
+      ansible.builtin.copy:
+        content: "{{ key_content }}"
+        dest: /tmp/id_rsa.pub
+        mode: 0600
+      delegate_to: localhost
+      run_once: true
+
+    - name: Add the public key to the Nexus switch
+      cisco.nxox.nxos_user:
+        name: "{{ automation_username }}"
+        ssh_key: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
+        state: present
