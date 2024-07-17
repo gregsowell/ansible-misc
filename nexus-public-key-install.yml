@@ -4,8 +4,8 @@
   gather_facts: false
   vars:
     automation_username: "automation"
-    # This data should really be supplied via a vaulted password
-    key_content: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ6"
+    # This data should really be supplied via a vault or stored as a file and using the file lookup plugin
+    key_content: "ssh-rsa 111222333444555666aaabbbb"
     
   tasks:
     # - name: Create the public key file for use with the nxos_user module
