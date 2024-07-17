@@ -16,6 +16,11 @@
     #   delegate_to: localhost
     #   run_once: true
 
+    - name: Set fact when I've supplied a cert_key variable via additional credentials
+      when: cert_key is defined
+      ansible.buitlin.set_fact:
+        key_content: "{{ cert_key }}"
+
     - name: Add the public key to the Nexus switch
       cisco.nxos.nxos_user:
         name: "{{ automation_username }}"
