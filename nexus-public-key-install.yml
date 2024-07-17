@@ -8,16 +8,17 @@
     key_content: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ6"
     
   tasks:
-    - name: Create the public key file for use with the nxos_user module
-      ansible.builtin.copy:
-        content: "{{ key_content }}"
-        dest: /tmp/id_rsa.pub
-        mode: 0600
-      delegate_to: localhost
-      run_once: true
+    # - name: Create the public key file for use with the nxos_user module
+    #   ansible.builtin.copy:
+    #     content: "{{ key_content }}"
+    #     dest: /tmp/id_rsa.pub
+    #     mode: 0600
+    #   delegate_to: localhost
+    #   run_once: true
 
     - name: Add the public key to the Nexus switch
       cisco.nxos.nxos_user:
         name: "{{ automation_username }}"
-        sshkey: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
+        # sshkey: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
+        sshkey: "{{ key_content }}"
         state: present
