@@ -6,7 +6,7 @@
     </tr>
     {% for line in package_change.stdout_lines %}
     <tr>
-      {% if '>' in line %}<td>{{ line }}</td>{% endif %}
+      {% if '<' in line %}<td>{{ line }}</td>{% endif %}
     </tr>
     {% endfor %}
   </table>
