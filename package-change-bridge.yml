@@ -52,7 +52,7 @@
             state: absent
 
         - name: Issue the yum changelog on changed packages
-          when: "'>' in item"
+          when: "'<' in item"
           vars:
             package_name: "{{ (item | regex_search('> ([^\\.]*)\\.', '\\1') | default(['']))[0] }}"
           ansible.builtin.shell: "yum changelog {{ package_name }}"
