@@ -9,4 +9,4 @@
 
     - name: Display the currently running kernel version and distribution
       ansible.builtin.debug:
-        msg: "The kernel version is {{ ansible_facts.ansible_kernel }} and the distribution is {{ ansible_facts.ansible_distribution }}"
+        msg: "The kernel version is {{ ansible_facts.kernel }} and the distribution is {{ ansible_facts.distribution }}"
