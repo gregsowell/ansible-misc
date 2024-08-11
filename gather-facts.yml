@@ -1,0 +1,8 @@
+---
+- name: Gather facts and display it
+  hosts: LL-rocky9-01
+#  gather_facts: false
+  tasks:
+    - name: Display all gathered facts
+      ansible.builtin.debug:
+        var: ansible_facts
