@@ -1,0 +1,20 @@
+---
+- name: Quick webserver install and configure
+  hosts: LL-rocky9-01
+  gather_facts: false
+  tasks:
+    - name: Install nginx webserver
+      ansible.builtin.package:
+        name: nginx
+        state: present
+    
+    - name: Start and enable nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Write a simple index.html file
+      ansible.builtin.lineinfile:
+      path: /usr/share/nginx/html/index.html
+      line: "<html><body><h1>Hello World!</h1></body></html>"
