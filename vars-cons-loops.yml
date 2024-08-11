@@ -11,12 +11,18 @@
       - 30
 
   tasks:
-    - name: Build a new variable named totals based on numbers larger than 10
-      when: item > 10
-      set_fact:
-        totals: "{{ totals | default([]) + [item] }}"
-      loop: "{{ nums }}"
+    # - name: Build a new variable named totals based on numbers larger than 10
+    #   when: item > 10
+    #   set_fact:
+    #     totals: "{{ totals | default([]) + [item] }}"
+    #   loop: "{{ nums }}"
       
-    - name: Debug totals variable
+    # - name: Debug totals variable
+    #   ansible.builtin.debug:
+    #     var: totals
+
+    - name: Display any numbers larger than 10
+      when: item > 10
       ansible.builtin.debug:
-        var: totals
+        msg: "{{ item }}"
+      loop: "{{ nums }}"
