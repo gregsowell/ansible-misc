@@ -17,6 +17,7 @@
 
     - name: Write a simple index.html file
       ansible.builtin.lineinfile:
-        path: /usr/share/nginx/html/index.html
+        # path: /usr/share/nginx/html/index.html
+        path: /var/www/html/index.html
         line: "<html><body><h1>Hello World!</h1></body></html>"
         create: true
