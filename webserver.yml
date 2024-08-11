@@ -2,6 +2,7 @@
 - name: Quick webserver install and configure
   hosts: LL-rocky9-01
   gather_facts: false
+  become: true
   tasks:
     - name: Install nginx webserver
       ansible.builtin.package:
