@@ -1,0 +1,22 @@
+---
+- name: Vars, conditionals, and loops
+  hosts: LL-rocky9-01
+  gather_facts: false
+  vars:
+    nums:
+      - 1
+      - 10
+      - 20
+      - 25
+      - 30
+
+  tasks:
+    - name: Build a new variable named totals based on numbers larger than 10
+      when: item > 10
+      set_fact:
+        totals: "{{ totals | default([]) + [item ', '] }}"
+      loop: "{{ nums }}"
+      
+    - name: Debug totals variable
+      ansible.builtin.debug:
+        var: totals
