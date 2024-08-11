@@ -19,5 +19,6 @@
       ansible.builtin.lineinfile:
         # path: /usr/share/nginx/html/index.html
         path: /var/www/html/index.html
-        line: "<html><body><h1>Hello World!</h1></body></html>"
+        # line: "<html><body><h1>Hello World!</h1></body></html>"
+        line: "<h1>Hello World!</h1>"
         create: true
