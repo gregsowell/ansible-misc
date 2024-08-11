@@ -14,7 +14,7 @@
     - name: Build a new variable named totals based on numbers larger than 10
       when: item > 10
       set_fact:
-        totals: "{{ totals | default([]) + [item '- '] }}"
+        totals: "{{ totals | default([]) + [item] }}"
       loop: "{{ nums }}"
       
     - name: Debug totals variable
