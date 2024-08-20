@@ -19,10 +19,10 @@
     - name: Display the contents of config_communities
       ansible.builtin.debug:
         var: config_communities
-        
+
     - name: Create the ref_snmp_config variable
       set_fact:
-        ref_snmp_config:
+        ref_snmp_config: &ref_snmp_config
           config:
             communities: "{{ config_communities }}"
           state: replaced
