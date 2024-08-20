@@ -23,6 +23,7 @@
 
     - name: Configure SNMP Server settings for Arista devices
       when: ansible_network_os == "eos"
+      become: true
       arista.eos.eos_snmp_server:
         <<: *ref_snmp_config
           
