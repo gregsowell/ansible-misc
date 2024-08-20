@@ -1,0 +1,28 @@
+---
+- name: SNMP Server config for multi-vendor network devices
+  hosts: multi-vendor
+  gather_facts: false
+  vars:
+    # The SNMP communities to be configured on the devices
+    config_communities:
+      - name: public
+      - name: private
+
+    # The working part of the snmp_server modules below
+    # Uses the config_communities variable to set the SNMP communities
+    ref_snmp_config: &ref_snmp_config
+      config:
+        communities: "{{ config_communities }}"
+      state: replaced
+
+  tasks:
+    - name: Configure SNMP Server settings for Nexus devices
+      when: ansible_network_os == "nxos"
+      cisco.nxos.nxos_snmp_server:
+        <<: *ref_snmp_config      
+
+    - name: Configure SNMP Server settings for Arista devices
+      when: ansible_network_os == "eos"
+      arista.eos.eos_snmp_server:
+        <<: *ref_snmp_config
+          
