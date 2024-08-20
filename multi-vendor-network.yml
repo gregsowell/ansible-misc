@@ -4,10 +4,10 @@
   gather_facts: false
   vars:
     # The SNMP communities to be configured on the devices
-    config_communities:
-      - name: public
-      - name: private
-
+    # config_communities:
+    #   - name: public
+    #   - name: private
+    config_communities: "{{ config_communities_survey.splitlines() }}"
     # The working part of the snmp_server modules below
     # Uses the config_communities variable to set the SNMP communities
     # ref_snmp_config: &ref_snmp_config
@@ -33,7 +33,7 @@
       cisco.nxos.nxos_snmp_server:
         # <<: *ref_snmp_config      
         config:
-          communities: "{{ config_communities.splitlines() }}"
+          communities: "{{ config_communities }}"
         state: replaced
 
     - name: Configure SNMP Server settings for Arista devices
@@ -42,7 +42,7 @@
       arista.eos.eos_snmp_server:
         # <<: *ref_snmp_config
         config:
-          communities: "{{ config_communities.splitlines() }}"
+          communities: "{{ config_communities }}"
         state: replaced
 
           
