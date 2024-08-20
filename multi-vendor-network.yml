@@ -16,15 +16,15 @@
     #   state: replaced
 
   tasks:
-    - name: Display the contents of config_communities
-      ansible.builtin.debug:
-        msg: "{{ config_communities.splitlines() }}"
+    # - name: Display the contents of config_communities
+    #   ansible.builtin.debug:
+    #     msg: "{{ config_communities.splitlines() }}"
 
     - name: Create the ref_snmp_config variable
       set_fact:
         ref_snmp_config: &ref_snmp_config
           config:
-            communities: "{{ config_communities }}"
+            communities: "{{ config_communities.splitlines() }}"
           state: replaced
 
     - name: Configure SNMP Server settings for Nexus devices
