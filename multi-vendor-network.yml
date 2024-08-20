@@ -26,6 +26,7 @@
           config:
             communities: "{{ config_communities.splitlines() }}"
           state: replaced
+      run_once: true
 
     - name: Configure SNMP Server settings for Nexus devices
       when: ansible_network_os == "nxos"
