@@ -18,7 +18,7 @@
   tasks:
     - name: Display the contents of config_communities
       ansible.builtin.debug:
-        var: config_communities
+        msg: "{{ config_communities.splitlines() }}"
 
     - name: Create the ref_snmp_config variable
       set_fact:
