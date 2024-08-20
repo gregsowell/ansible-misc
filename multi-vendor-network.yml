@@ -4,16 +4,16 @@
   gather_facts: false
   vars:
     # The SNMP communities to be configured on the devices
-    # config_communities:
-    #   - name: public
-    #   - name: private
-    config_communities: "{{ config_communities_survey.splitlines() }}"
+    config_communities:
+      - name: public
+      - name: private
+    # config_communities: "{{ config_communities_survey.splitlines() }}"
     # The working part of the snmp_server modules below
     # Uses the config_communities variable to set the SNMP communities
-    # ref_snmp_config: &ref_snmp_config
-    #   config:
-    #     communities: "{{ config_communities }}"
-    #   state: replaced
+    ref_snmp_config: &ref_snmp_config
+      config:
+        communities: "{{ config_communities }}"
+      state: replaced
 
   tasks:
     # - name: Display the contents of config_communities
@@ -31,18 +31,18 @@
     - name: Configure SNMP Server settings for Nexus devices
       when: ansible_network_os == "nxos"
       cisco.nxos.nxos_snmp_server:
-        # <<: *ref_snmp_config      
-        config:
-          communities: "{{ config_communities }}"
-        state: replaced
+        <<: *ref_snmp_config      
+        # config:
+        #   communities: "{{ config_communities }}"
+        # state: replaced
 
     - name: Configure SNMP Server settings for Arista devices
       when: ansible_network_os == "eos"
       become: true
       arista.eos.eos_snmp_server:
-        # <<: *ref_snmp_config
-        config:
-          communities: "{{ config_communities }}"
-        state: replaced
+        <<: *ref_snmp_config
+        # config:
+        #   communities: "{{ config_communities }}"
+        # state: replaced
 
           
