@@ -20,22 +20,29 @@
     #   ansible.builtin.debug:
     #     msg: "{{ config_communities.splitlines() }}"
 
-    - name: Create the ref_snmp_config variable
-      set_fact:
-        ref_snmp_config: &ref_snmp_config
-          config:
-            communities: "{{ config_communities.splitlines() }}"
-          state: replaced
-      run_once: true
+    # - name: Create the ref_snmp_config variable
+    #   set_fact:
+    #     ref_snmp_config: &ref_snmp_config
+    #       config:
+    #         communities: "{{ config_communities.splitlines() }}"
+    #       state: replaced
+    #   run_once: true
 
     - name: Configure SNMP Server settings for Nexus devices
       when: ansible_network_os == "nxos"
       cisco.nxos.nxos_snmp_server:
-        <<: *ref_snmp_config      
+        # <<: *ref_snmp_config      
+        config:
+          communities: "{{ config_communities.splitlines() }}"
+        state: replaced
 
     - name: Configure SNMP Server settings for Arista devices
       when: ansible_network_os == "eos"
       become: true
       arista.eos.eos_snmp_server:
-        <<: *ref_snmp_config
+        # <<: *ref_snmp_config
+        config:
+          communities: "{{ config_communities.splitlines() }}"
+        state: replaced
+
           
