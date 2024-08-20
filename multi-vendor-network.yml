@@ -12,7 +12,7 @@
     # Uses the config_communities variable to set the SNMP communities
     ref_snmp_config: &ref_snmp_config
       config:
-        communities: "{{ config_communities }}"
+        communities: "{{ config_communities | dict2items}}"
       state: replaced
 
   tasks:
