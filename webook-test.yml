@@ -1,0 +1,10 @@
+---
+- name: Quick test of Github webook variables sent
+  hosts: localhost
+  gather_facts: false
+  vars:
+  tasks:
+    - name: Print out the name of all files modified
+      ansible.builtin.debug:
+        var: item.modified
+      loop: "{{ awx_webhook_payload.commits }}"
