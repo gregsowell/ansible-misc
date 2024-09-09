@@ -7,5 +7,6 @@
   tasks:
     - name: Print out the name of all files modified
       ansible.builtin.debug:
-        var: item.modified
-      loop: "{{ awx_webhook_payload.commits }}"
+        #var: item.modified
+        msg: "{{ item }}"
+      loop: "{{ awx_webhook_payload.commits[0].modified }}"
