@@ -1,0 +1,14 @@
+---
+- name: install apache on rocky 9
+  hosts: Greg-rocky9
+  become: true
+  tasks:
+    - name: Install apache
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+    - name: Start apache
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
