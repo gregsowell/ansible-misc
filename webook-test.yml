@@ -5,6 +5,10 @@
   vars:
     test: 1234
   tasks:
+    - name: Print out the full awx_webhook_payload
+      ansible.builtin.debug:
+        var: awx_webhook_payload
+        
     - name: Print out the name of all files modified
       ansible.builtin.debug:
         #var: item.modified
