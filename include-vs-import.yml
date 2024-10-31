@@ -3,11 +3,11 @@
   hosts: localhost
   gather_facts: false
   vars:
-    testvar: Default Value
+    # testvar: Default Value
   tasks:
-    - name: Display testvar
-      ansible.builtin.debug:
-        var: testvar
+    # - name: Display testvar
+    #   ansible.builtin.debug:
+    #     var: testvar
 
     - name: Reset testvar Value
       set_fact:
