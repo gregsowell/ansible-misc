@@ -3,16 +3,19 @@
 - name: A quick demo on using include vs import in Ansible
   hosts: localhost
   gather_facts: false
-  vars:
-    testvar: "Default Value"  # Start with a default value
   tasks:
-    - name: Set testvar to "New Value"
-      set_fact:
+    - name: Display testvar (initial state)
+      ansible.builtin.debug:
+        msg: "Initial testvar value: {{ testvar | default('undefined') }}"
+
+    - name: Import task (static parsing)
+      import_tasks: tasks/import-tasks.yml
+      when: testvar == "New Value"  # This condition won't be met initially
+
+    - name: Set testvar to "New Value" (after import parsing)
+      ansible.builtin.set_fact:
         testvar: "New Value"
 
-    - name: Import display testvar (without condition)
-      import_tasks: tasks/import-tasks.yml
-
-    - name: Include display testvar
+    - name: Include task (dynamic parsing)
       include_tasks: tasks/include-tasks.yml
       when: testvar == "New Value"
