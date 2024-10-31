@@ -14,7 +14,9 @@
         testvar: New Value
 
     - name: Import a task file
+      when: testvar == "New Value"
       import_tasks: tasks/import-tasks.yml
 
     - name: Include a task file
+      when: testvar == "New Value"
       include_tasks: tasks/include-tasks.yml
