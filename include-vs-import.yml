@@ -9,6 +9,10 @@
       ansible.builtin.debug:
         var: testvar
 
+    - name: Reset testvar Value
+      set_fact:
+        testvar: New Value
+
     - name: Import a task file
       import_tasks: tasks/import-tasks.yml
 
