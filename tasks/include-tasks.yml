@@ -1,4 +1,5 @@
----
-- name: Include Task Display testvar (dynamic)
+# tasks/include-tasks.yml
+- name: Include Task Display testvar if it is "Updated Value"
   ansible.builtin.debug:
     msg: "Include Task: testvar is {{ testvar }}"
+  when: testvar == "Updated Value"

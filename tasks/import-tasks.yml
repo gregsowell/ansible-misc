@@ -1,4 +1,5 @@
----
-- name: Import Task Display testvar (static)
+# tasks/import-tasks.yml
+- name: Import Task Display testvar if it is "Updated Value"
   ansible.builtin.debug:
     msg: "Import Task: testvar is {{ testvar }}"
+  when: testvar == "Updated Value"

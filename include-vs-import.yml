@@ -20,5 +20,5 @@
     - name: Use include_tasks (dynamic)
       include_tasks: tasks/include-tasks.yml
 
-    - name: Use import_tasks (static)
+    - name: Re-run import_tasks after update
       import_tasks: tasks/import-tasks.yml
