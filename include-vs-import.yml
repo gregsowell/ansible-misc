@@ -1,22 +1,23 @@
+# playbook.yml
 ---
-- name: A quick demo on using include vs import in ansible
+- name: A quick demo on using include vs import in Ansible
   hosts: localhost
   gather_facts: false
   vars:
     # testvar: Default Value
   tasks:
-    # - name: Display testvar
-    #   ansible.builtin.debug:
-    #     var: testvar
-
-    - name: Reset testvar Value
+    - name: Set a default value for testvar
       set_fact:
-        testvar: New Value
+        testvar: "Default Value"
+
+    # - name: Reset testvar Value
+    #   set_fact:
+    #     testvar: "New Value"
 
     - name: Import a task file
-      when: testvar == "New Value"
       import_tasks: tasks/import-tasks.yml
+      when: testvar == "New Value"
 
     - name: Include a task file
-      when: testvar == "New Value"
       include_tasks: tasks/include-tasks.yml
+      when: testvar == "New Value"
