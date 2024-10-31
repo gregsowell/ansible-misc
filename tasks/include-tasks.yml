@@ -1,4 +1,4 @@
 ---
-- name: Include display testvar
+- name: Include Task Display testvar (dynamic)
   ansible.builtin.debug:
-    var: testvar
+    msg: "Include Task: testvar is {{ testvar }}"

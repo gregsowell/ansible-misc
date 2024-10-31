@@ -1,4 +1,4 @@
 ---
-- name: Import display testvar
+- name: Import Task Display testvar (static)
   ansible.builtin.debug:
-    var: testvar
+    msg: "Import Task: testvar is {{ testvar }}"

@@ -1,26 +1,21 @@
 # playbook.yml
 ---
-- name: Demo showing import_tasks vs include_tasks with loop
+- name: A demo on using include vs import in Ansible with incorrect info
   hosts: localhost
   gather_facts: false
+  vars:
+    testvar: "Initial Value"  # Initial value for the variable
   tasks:
-    - name: Set list of items
+    - name: Display initial testvar value
+      ansible.builtin.debug:
+        msg: "Before import_tasks and include_tasks: testvar is {{ testvar }}"
+
+    - name: Use import_tasks (static)
+      import_tasks: tasks/import-tasks.yml
+
+    - name: Update testvar to "Updated Value"
       set_fact:
-        item_list:
-          - one
-          - two
-          - three
+        testvar: "Updated Value"
 
-    - name: Use import_tasks with a loop (static)
-      import_tasks: tasks/loop-tasks.yml
-      loop: "{{ item_list }}"
-      when: "'three' not in item_list"
-
-    - name: Modify item_list to remove 'three'
-      set_fact:
-        item_list: "{{ item_list | difference(['three']) }}"
-
-    - name: Use include_tasks with a loop (dynamic)
-      include_tasks: tasks/loop-tasks.yml
-      loop: "{{ item_list }}"
-      when: "'three' not in item_list"
+    - name: Use include_tasks (dynamic)
+      include_tasks: tasks/include-tasks.yml
