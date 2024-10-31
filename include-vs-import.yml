@@ -9,8 +9,8 @@
         msg: "Initial testvar value: {{ testvar | default('undefined') }}"
 
     - name: Import task (static parsing)
-      include_tasks: tasks/import-tasks.yml
-      when: testvar == "New Value"  # This condition won't be met initially
+      import_tasks: tasks/import-tasks.yml
+      when: (testvar | default('')) == "New Value"  # Use default filter
 
     - name: Set testvar to "New Value" (after import parsing)
       ansible.builtin.set_fact:
@@ -18,4 +18,4 @@
 
     - name: Include task (dynamic parsing)
       include_tasks: tasks/include-tasks.yml
-      when: testvar == "New Value"
+      when: (testvar | default('')) == "New Value"  # Use default filter
