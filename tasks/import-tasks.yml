@@ -1,0 +1,4 @@
+---
+- name: Import display testvar
+  ansible.builtin.debug:
+    var: testvar

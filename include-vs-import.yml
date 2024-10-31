@@ -10,7 +10,7 @@
         var: testvar
 
     - name: Import a task file
-      import_tasks: tasks/include-vs-import-tasks.yml
+      import_tasks: tasks/import-tasks.yml
 
     - name: Include a task file
-      include_tasks: tasks/include-vs-import-tasks.yml
+      include_tasks: tasks/include-tasks.yml
