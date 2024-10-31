@@ -1,0 +1,4 @@
+# tasks/loop-tasks.yml
+- name: Display loop item
+  ansible.builtin.debug:
+    msg: "Current loop item: {{ item }}"
