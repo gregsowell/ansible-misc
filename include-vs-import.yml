@@ -1,0 +1,16 @@
+---
+- name: A quick demo on using include vs import in ansible
+  hosts: localhost
+  gather_facts: false
+  vars:
+    testvar: Default Value
+  tasks:
+    - name: Display testvar
+      ansible.builtin.debug:
+        var: testvar
+
+    - name: Import a task file
+      import_tasks: include-vs-import-tasks.yml
+
+    - name: Include a task file
+      include_tasks: include-vs-import-tasks.yml

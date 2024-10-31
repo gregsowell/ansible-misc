@@ -1,0 +1,4 @@
+---
+- name: Display testvar
+  ansible.builtin.debug:
+    var: testvar
