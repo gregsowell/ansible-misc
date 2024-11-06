@@ -54,17 +54,20 @@
 
     - name: Download the bundle installer using AWX API
       uri:
-        url: "http://{{ ascender_host }}/api/v2/instances/{{ instance_id }}/download_bundle/"
+        # url: "http://{{ ascender_host }}/api/v2/instances/{{ instance_id }}/install_bundle/"
+        url: "{{ new_instance_info.location }}install_bundle/"
         method: GET
+        user: "{{ awx_username }}"
+        password: "{{ awx_password }}"
         headers:
-          Authorization: "Bearer {{ awx_token }}"
+          # Authorization: "Bearer {{ awx_token }}"
         dest: /tmp/bundle_installer.tar.gz
         mode: '0644'
       register: download_info
 
     - name: Check if the bundle was downloaded successfully
       debug:
-        msg: "Bundle installer downloaded to /tmp/bundle_installer.tar.gz"
+        var: download_info
 
     - name: Extract tar.gz file
       unarchive:
