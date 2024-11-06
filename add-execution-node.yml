@@ -8,37 +8,45 @@
     awx_password: myadminpassword
     new_instance: exec1.gregsowell.com
   tasks:
-    - name: Request API token using username and password
-      uri:
-        url: "http://{{ ascender_host }}/api/v2/tokens/"
-        method: POST
-        body:
-          username: "{{ awx_username }}"
-          password: "{{ awx_password }}"
-        body_format: json
-        headers:
-          Content-Type: "application/json"
-        status_code: 201
-      register: auth_response
+    # - name: Request API token using username and password
+    #   uri:
+    #     url: "http://{{ ascender_host }}/api/v2/tokens/"
+    #     method: POST
+    #     body:
+    #       username: "{{ awx_username }}"
+    #       password: "{{ awx_password }}"
+    #     body_format: json
+    #     headers:
+    #       Content-Type: "application/json"
+    #     status_code: 201
+    #   register: auth_response
 
-    - name: Extract the token from the response
-      set_fact:
-        awx_token: "{{ auth_response.json.token }}"
+    # - name: Extract the token from the response
+    #   set_fact:
+    #     awx_token: "{{ auth_response.json.token }}"
 
-    - name: Display token for verification (optional, for debugging)
-      debug:
-        msg: "API Token: {{ awx_token }}"
+    # - name: Display token for verification (optional, for debugging)
+    #   debug:
+    #     msg: "API Token: {{ awx_token }}"
 
     - name: Add new instance via AWX API
       uri:
         url: "http://{{ ascender_host }}/api/v2/instances/"
         method: POST
+        user: "{{ awx_username }}"
+        password: "{{ awx_password }}"
+        validate_certs: false
+        force_basic_auth: true
         headers:
           Content-Type: "application/json"
           Authorization: "Bearer {{ awx_token }}"
         body: |
           {
-            "hostname": "{{ new_instance }}"
+            "hostname": "{{ new_instance }}",
+            "listener_port": 27199,
+            "node_type": "execution",
+            "enabled": true,
+            "peers_from_control_nodes": false
           }
         body_format: json
         status_code: 201
