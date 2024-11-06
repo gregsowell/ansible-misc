@@ -84,7 +84,7 @@
         remote_src: yes
 
     - name: Display contents of /tmp/extracted_bundle
-      ansible.builtin.shell: ls -l /tmp/extracted_bundle
+      ansible.builtin.shell: "ls -l /tmp/extracted_bundle/{{ new_instance }}_install_bundle"
       register: bundle_contents
 
     - name: Show bundle contents
@@ -100,4 +100,4 @@
     #   include_playbook: /tmp/extracted_bundle/install_receptor.yml
 
     - name: Run /tmp/extracted_bundle/install_receptor.yml
-      ansible.builtin.shell: "ansible-playbook /tmp/extracted_bundle/{{ new_instance }}/install_receptor.yml"
+      ansible.builtin.shell: "ansible-playbook /tmp/extracted_bundle/{{ new_instance }}_install_bundle/install_receptor.yml"
