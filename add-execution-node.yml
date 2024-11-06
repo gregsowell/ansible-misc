@@ -66,6 +66,9 @@
       debug:
         msg: "Bundle extracted to /tmp/extracted_bundle"
 
-    - name: Run extracted playbooks
-      # import_playbook: /tmp/extracted_bundle/playbook_name.yml
-      include_playbook: /tmp/extracted_bundle/install_receptor.yml
+    # - name: Run extracted playbooks
+    #   # import_playbook: /tmp/extracted_bundle/playbook_name.yml
+    #   include_playbook: /tmp/extracted_bundle/install_receptor.yml
+
+    - name: Run /tmp/extracted_bundle/install_receptor.yml
+      ansible.builtin.shell: ansible-playbook /tmp/extracted_bundle/install_receptor.yml
