@@ -67,4 +67,5 @@
         msg: "Bundle extracted to /tmp/extracted_bundle"
 
     - name: Run extracted playbooks
-      import_playbook: /tmp/extracted_bundle/playbook_name.yml
+      # import_playbook: /tmp/extracted_bundle/playbook_name.yml
+      include_playbook: /tmp/extracted_bundle/playbook_name.yml
