@@ -1,0 +1,70 @@
+---
+- name: Add and install an execution node to Ascender or AWX
+  hosts: localhost
+  gather_facts: false
+  vars:
+    ascender_host: ascender3.gregsowell.com
+    new_instance: exec1.gregsowell.com
+  tasks:
+    - name: Request API token using username and password
+      uri:
+        url: "http://{{ ascender_host }}/api/v2/tokens/"
+        method: POST
+        body:
+          username: "{{ awx_username }}"
+          password: "{{ awx_password }}"
+        body_format: json
+        headers:
+          Content-Type: "application/json"
+        status_code: 201
+      register: auth_response
+
+    - name: Extract the token from the response
+      set_fact:
+        awx_token: "{{ auth_response.json.token }}"
+
+    - name: Display token for verification (optional, for debugging)
+      debug:
+        msg: "API Token: {{ awx_token }}"
+
+    - name: Add new instance via AWX API
+      uri:
+        url: "http://{{ ascender_host }}/api/v2/instances/"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ awx_token }}"
+        body: |
+          {
+            "hostname": "{{ new_instance }}"
+          }
+        body_format: json
+        status_code: 201
+      register: new_instance_info
+
+    - name: Download the bundle installer using AWX API
+      uri:
+        url: "http://{{ ascender_host }}/api/v2/instances/{{ instance_id }}/download_bundle/"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ awx_token }}"
+        dest: /tmp/bundle_installer.tar.gz
+        mode: '0644'
+      register: download_info
+
+    - name: Check if the bundle was downloaded successfully
+      debug:
+        msg: "Bundle installer downloaded to /tmp/bundle_installer.tar.gz"
+
+    - name: Extract tar.gz file
+      unarchive:
+        src: /tmp/bundle_installer.tar.gz
+        dest: /tmp/extracted_bundle
+        remote_src: yes
+
+    - name: Confirm extraction
+      debug:
+        msg: "Bundle extracted to /tmp/extracted_bundle"
+
+    - name: Run extracted playbooks
+      import_playbook: /tmp/extracted_bundle/playbook_name.yml
