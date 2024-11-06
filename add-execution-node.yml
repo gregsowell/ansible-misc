@@ -68,4 +68,4 @@
 
     - name: Run extracted playbooks
       # import_playbook: /tmp/extracted_bundle/playbook_name.yml
-      include_playbook: /tmp/extracted_bundle/playbook_name.yml
+      include_playbook: /tmp/extracted_bundle/install_receptor.yml
