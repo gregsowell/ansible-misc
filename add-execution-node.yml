@@ -4,6 +4,8 @@
   gather_facts: false
   vars:
     ascender_host: ascender3.gregsowell.com
+    awx_username: admin
+    awx_password: myadminpassword
     new_instance: exec1.gregsowell.com
   tasks:
     - name: Request API token using username and password
