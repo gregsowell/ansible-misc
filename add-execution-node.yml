@@ -59,7 +59,7 @@
         method: GET
         user: "{{ awx_username }}"
         password: "{{ awx_password }}"
-        headers:
+        # headers:
           # Authorization: "Bearer {{ awx_token }}"
         dest: /tmp/bundle_installer.tar.gz
         mode: '0644'
