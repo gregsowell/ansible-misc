@@ -71,6 +71,12 @@
       debug:
         var: download_info
 
+    - name: Create /tmp/extracted_bundle directory
+      ansible.builtin.file:
+        path: /tmp/extracted_bundle
+        state: directory
+        mode: '0755'
+
     - name: Extract tar.gz file
       unarchive:
         src: /tmp/bundle_installer.tar.gz
