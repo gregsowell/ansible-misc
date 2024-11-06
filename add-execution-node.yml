@@ -59,6 +59,8 @@
         method: GET
         user: "{{ awx_username }}"
         password: "{{ awx_password }}"
+        validate_certs: false
+        force_basic_auth: true
         # headers:
           # Authorization: "Bearer {{ awx_token }}"
         dest: /tmp/bundle_installer.tar.gz
