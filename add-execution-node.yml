@@ -83,9 +83,17 @@
         dest: /tmp/extracted_bundle
         remote_src: yes
 
-    - name: Confirm extraction
+    - name: Display contents of /tmp/extracted_bundle
+      ansible.builtin.shell: ls -l /tmp/extracted_bundle
+      register: bundle_contents
+
+    - name: Show bundle contents
       debug:
-        msg: "Bundle extracted to /tmp/extracted_bundle"
+        var: bundle_contents.stdout_lines
+
+    # - name: Confirm extraction
+    #   debug:
+    #     msg: "Bundle extracted to /tmp/extracted_bundle"
 
     # - name: Run extracted playbooks
     #   # import_playbook: /tmp/extracted_bundle/playbook_name.yml
