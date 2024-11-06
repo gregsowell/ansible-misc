@@ -100,4 +100,4 @@
     #   include_playbook: /tmp/extracted_bundle/install_receptor.yml
 
     - name: Run /tmp/extracted_bundle/install_receptor.yml
-      ansible.builtin.shell: "ansible-playbook /tmp/extracted_bundle/{{ new_instance }}_install_bundle/install_receptor.yml"
+      ansible.builtin.shell: "ansible-playbook -i /tmp/extracted_bundle/{{ new_instance }}_install_bundle/inventory.yml /tmp/extracted_bundle/{{ new_instance }}_install_bundle/install_receptor.yml"
