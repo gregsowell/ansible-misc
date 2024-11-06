@@ -39,7 +39,7 @@
         force_basic_auth: true
         headers:
           Content-Type: "application/json"
-          Authorization: "Bearer {{ awx_token }}"
+          # Authorization: "Bearer {{ awx_token }}"
         body: |
           {
             "hostname": "{{ new_instance }}",
