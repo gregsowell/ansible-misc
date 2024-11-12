@@ -62,12 +62,13 @@
             package_name: "{{ item | regex_search('< ([^\\.]+)', '\\1') | default('') }}"
           ansible.builtin.shell: "yum changelog {{ package_name }}"
           loop: "{{ package_change.stdout_lines }}"
+          ignore_errors: true
           register: changelog_output
 
         - name: Create the changelog variable
           when: item.changed == true
           set_fact:
-            changelog: "{{ changelog | default('') + item.stdout | regex_replace('(?s)^.*?(={4,}.*\n)', '\\1') }} \n\n"
+            changelog: "{{ changelog | default('') + item.stdout | default('no valid data') | regex_replace('(?s)^.*?(={4,}.*\n)', '\\1') }} \n\n"
           loop: "{{ changelog_output.results }}"
           
         - name: Write contents of changelog with changes to a file
