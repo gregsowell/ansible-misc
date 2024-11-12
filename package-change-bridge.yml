@@ -65,6 +65,10 @@
           ignore_errors: true
           register: changelog_output
 
+        - name: Debug changelog_output variable
+          ansible.builtin.debug:
+            var: changelog_output
+
         - name: Create the changelog variable
           when: item.changed == true
           set_fact:
