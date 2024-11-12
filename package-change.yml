@@ -13,8 +13,12 @@
     email_to: greg@gregsowell.com
 
   tasks:
+    - name: Run yum makecache fast to update repo cache
+      ansible.builtin.shell: "yum makecache fast"
+
     - name: Use dnf shell command to get a list of all packages in repository
-      ansible.builtin.shell: "dnf list available | tail -n +3 > {{ file_location }}/available-packages-temp.txt"
+      # ansible.builtin.shell: "dnf list available | tail -n +3 > {{ file_location }}/available-packages-temp.txt"
+      ansible.builtin.shell: "yum list available | tail -n +3 | awk '{if ($3 ~ /ciq-bridge/) print $0}' > {{ file_location }}/available-packages-temp.txt"
       # register: installed_packages
       # changed_when: false
 
