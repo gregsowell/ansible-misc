@@ -58,7 +58,8 @@
         - name: Issue the yum changelog on changed packages
           when: "'<' in item"
           vars:
-            package_name: "{{ (item | regex_search('< ([^\\.]*)\\.', '\\1') | default(['']))[0] }}"
+            # package_name: "{{ (item | regex_search('< ([^\\.]*)\\.', '\\1') | default(['']))[0] }}"
+            package_name: "{{ item | regex_search('< ([^\\.]+)', '\\1') | default('') }}"
           ansible.builtin.shell: "yum changelog {{ package_name }}"
           loop: "{{ package_change.stdout_lines }}"
           register: changelog_output
