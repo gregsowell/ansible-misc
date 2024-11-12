@@ -43,9 +43,9 @@
       changed_when: false
       failed_when: package_change.rc != 1 and package_change.rc != 0
 
-    - name: Debug package_change variable
-      ansible.builtin.debug:
-        var: package_change
+    # - name: Debug package_change variable
+    #   ansible.builtin.debug:
+    #     var: package_change
 
     - name: Block to process when package_change is not empty
       when: package_change.stdout | default("") != ""
@@ -66,9 +66,9 @@
           ignore_errors: true
           register: changelog_output
 
-        - name: Debug changelog_output variable
-          ansible.builtin.debug:
-            var: changelog_output
+        # - name: Debug changelog_output variable
+        #   ansible.builtin.debug:
+        #     var: changelog_output
 
         - name: Create the changelog variable
           when: item.changed == true
