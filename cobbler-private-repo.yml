@@ -70,11 +70,43 @@
       ansible.builtin.debug:
         var: sync_output.stdout
 
-    - name: Ensure SELinux allows Cobbler operations
-      ansible.posix.seboolean:
-        name: "httpd_can_network_connect"
-        state: yes
-        persistent: yes
+    # - name: Ensure SELinux allows Cobbler operations
+    #   ansible.posix.seboolean:
+    #     name: "httpd_can_network_connect"
+    #     state: yes
+    #     persistent: yes
+
+    - name: Check if SELinux is enforcing
+      ansible.builtin.command: getenforce
+      register: selinux_status
+      changed_when: False
+
+    - name: Install required packages for SELinux policy management
+      ansible.builtin.dnf:
+        name:
+          - policycoreutils
+          - policycoreutils-python-utils
+          - setools-console
+        state: present
+      when: selinux_status.stdout == "Enforcing"
+
+    - name: Check for SELinux denials related to Cobbler
+      ansible.builtin.command: grep cobbler /var/log/audit/audit.log || true
+      register: selinux_denials
+      changed_when: False
+      when: selinux_status.stdout == "Enforcing"
+
+    - name: Generate and apply a custom SELinux policy for Cobbler
+      block:
+        - name: Generate custom SELinux module
+          ansible.builtin.shell: |
+            ausearch -m avc --input=/var/log/audit/audit.log | audit2allow -M cobbler_local
+            semodule -i cobbler_local.pp
+          args:
+            executable: /bin/bash
+          when: selinux_denials.stdout != ""
+      when: selinux_status.stdout == "Enforcing"
+
 
     - name: Open firewall ports for Cobbler
       ansible.builtin.firewalld:
