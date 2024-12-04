@@ -71,7 +71,7 @@
         var: sync_output.stdout
 
     - name: Ensure SELinux allows Cobbler operations
-      ansible.builtin.seboolean:
+      ansible.posix.seboolean:
         name: "httpd_can_network_connect"
         state: yes
         persistent: yes
