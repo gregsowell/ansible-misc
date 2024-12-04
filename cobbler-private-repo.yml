@@ -67,7 +67,6 @@
         --mirror-locally=Y
         --arch=x86_64
         --breed=rsync
-        --gpg-key={{ cobbler_gpg_key_path }}
       args:
         creates: "/var/lib/cobbler/repo_mirror/{{ cobbler_repo_name }}"
 
