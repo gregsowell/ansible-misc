@@ -12,6 +12,19 @@
     cobbler_repo_password: "repo_password"
 
   tasks:
+    - name: Enable EPEL repository
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+
+    - name: Enable CRB and AppStream repositories
+      ansible.builtin.command: dnf config-manager --set-enabled crb
+      register: enable_crb
+      changed_when: "'enabled' in enable_crb.stdout"
+
+    - name: Refresh DNF cache
+      ansible.builtin.command: dnf makecache
+
     - name: Install Cobbler and required packages
       ansible.builtin.dnf:
         name:
