@@ -108,16 +108,16 @@
       when: selinux_status.stdout == "Enforcing"
 
 
-    - name: Open firewall ports for Cobbler
-      ansible.builtin.firewalld:
-        service: "http"
-        state: enabled
-        permanent: yes
-      notify:
-        - Reload firewalld
+  #   - name: Open firewall ports for Cobbler
+  #     ansible.builtin.firewalld:
+  #       service: "http"
+  #       state: enabled
+  #       permanent: yes
+  #     notify:
+  #       - Reload firewalld
 
-  handlers:
-    - name: Reload firewalld
-      ansible.builtin.service:
-        name: firewalld
-        state: reloaded
+  # handlers:
+  #   - name: Reload firewalld
+  #     ansible.builtin.service:
+  #       name: firewalld
+  #       state: reloaded
