@@ -29,7 +29,7 @@
       ansible.builtin.dnf:
         name:
           - cobbler-3.2.3-2.el9
-          - cobbler3.2-web-3.2.3-2.el9
+          # - cobbler3.2-web-3.2.3-2.el9
           # - cobbler
           # - cobbler-web
           - rsync
