@@ -3,9 +3,10 @@
   hosts: Greg-rocky9
   become: true
   vars:
+    #info supplied from https://depot.ciq.com/satellite/bridge/ciq-bridge.x86_64 for bridge
     cobbler_repo_name: "example_repo"
     # cobbler_repo_url: "https://example.com/repo"
-    cobbler_repo_url: "https://your_username:your_password@example.com/dnf/repopath/"
+    cobbler_repo_url: "https://your_username:your_password@depot.ciq.com/dnf/satellite/bridge/ciq-bridge.x86_64/"
     cobbler_gpg_key_url: "https://example.com/repo-key.gpg"
     cobbler_gpg_key_path: "/etc/pki/rpm-gpg/example-repo-key.gpg"
     cobbler_repo_creds_path: "/etc/cobbler/example_repo_creds"
