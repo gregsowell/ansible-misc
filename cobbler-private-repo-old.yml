@@ -1,0 +1,136 @@
+---
+- name: Configure Cobbler on Rocky Linux 9
+  hosts: Greg-rocky9
+  become: true
+  vars:
+    cobbler_repo_name: "example_repo"
+    # cobbler_repo_url: "https://example.com/repo"
+    cobbler_repo_url: "https://your_username:your_password@example.com/dnf/repopath/"
+    cobbler_gpg_key_url: "https://example.com/repo-key.gpg"
+    cobbler_gpg_key_path: "/etc/pki/rpm-gpg/example-repo-key.gpg"
+    cobbler_repo_creds_path: "/etc/cobbler/example_repo_creds"
+    # cobbler_repo_user: "repo_user"
+    # cobbler_repo_password: "repo_password"
+
+  tasks:
+    - name: Enable EPEL repository
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+
+    - name: Enable CRB and AppStream repositories
+      ansible.builtin.command: dnf config-manager --set-enabled crb
+      register: enable_crb
+      changed_when: "'enabled' in enable_crb.stdout"
+
+    - name: Refresh DNF cache
+      ansible.builtin.command: dnf makecache
+
+    - name: Install Cobbler and required packages
+      ansible.builtin.dnf:
+        name:
+          - cobbler
+          - rsync
+          - httpd
+          - python3-librepo
+        state: present
+
+    - name: Enable and start Cobbler and HTTPD services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - cobblerd
+        - httpd
+
+    - name: Download the GPG key
+      ansible.builtin.get_url:
+        url: "{{ cobbler_gpg_key_url }}"
+        dest: "{{ cobbler_gpg_key_path }}"
+        mode: '0644'
+
+    # - name: Create Cobbler repo credentials file
+    #   ansible.builtin.copy:
+    #     dest: "{{ cobbler_repo_creds_path }}"
+    #     content: |
+    #       user:{{ cobbler_repo_user }}
+    #       password:{{ cobbler_repo_password }}
+    #     mode: '0600'
+
+    - name: Add the repository to Cobbler
+      ansible.builtin.command: >
+        cobbler repo add
+        --name={{ cobbler_repo_name }}
+        --mirror={{ cobbler_repo_url }}
+        --mirror-locally=Y
+        --arch=x86_64
+        --breed=yum
+      args:
+        creates: "/var/lib/cobbler/repo_mirror/{{ cobbler_repo_name }}"
+
+    # - name: Add YUM options for the repository
+    #   ansible.builtin.command: >
+    #     cobbler repo edit
+    #     --name={{ cobbler_repo_name }}
+    #     --yumopts="--config {{ cobbler_repo_creds_path }}"
+
+    - name: Synchronize the repository
+      ansible.builtin.command: cobbler reposync
+      register: sync_output
+
+    - name: Display repository sync output
+      ansible.builtin.debug:
+        var: sync_output.stdout
+
+    # - name: Ensure SELinux allows Cobbler operations
+    #   ansible.posix.seboolean:
+    #     name: "httpd_can_network_connect"
+    #     state: yes
+    #     persistent: yes
+
+    - name: Check if SELinux is enforcing
+      ansible.builtin.command: getenforce
+      register: selinux_status
+      changed_when: False
+
+    - name: Install required packages for SELinux policy management
+      ansible.builtin.dnf:
+        name:
+          - policycoreutils
+          - policycoreutils-python-utils
+          - setools-console
+        state: present
+      when: selinux_status.stdout == "Enforcing"
+
+    - name: Check for SELinux denials related to Cobbler
+      ansible.builtin.command: grep cobbler /var/log/audit/audit.log || true
+      register: selinux_denials
+      changed_when: False
+      when: selinux_status.stdout == "Enforcing"
+
+    - name: Generate and apply a custom SELinux policy for Cobbler
+      block:
+        - name: Generate custom SELinux module
+          ansible.builtin.shell: |
+            ausearch -m avc --input=/var/log/audit/audit.log | audit2allow -M cobbler_local
+            semodule -i cobbler_local.pp
+          args:
+            executable: /bin/bash
+          when: selinux_denials.stdout != ""
+      when: selinux_status.stdout == "Enforcing"
+
+
+  #   - name: Open firewall ports for Cobbler
+  #     ansible.builtin.firewalld:
+  #       service: "http"
+  #       state: enabled
+  #       permanent: yes
+  #     notify:
+  #       - Reload firewalld
+
+  # handlers:
+  #   - name: Reload firewalld
+  #     ansible.builtin.service:
+  #       name: firewalld
+  #       state: reloaded
