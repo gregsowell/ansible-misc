@@ -66,17 +66,18 @@
         --mirror-locally=Y
         --arch=x86_64
         --breed=yum
+        --keep-updated=True
       args:
         creates: "/var/lib/cobbler/repo_mirror/{{ cobbler_repo_name }}"
 
-    - name: Reinforce breed and keep-update
-      ansible.builtin.command: >
-        cobbler repo edit
-        --name={{ cobbler_repo_name }}
-        --{{ item }}
-      loop:
-        - "breed=yum"
-        - "keep-updated=True"
+    # - name: Reinforce breed and keep-update
+    #   ansible.builtin.command: >
+    #     cobbler repo edit
+    #     --name={{ cobbler_repo_name }}
+    #     --{{ item }}
+    #   loop:
+    #     - "breed=yum"
+    #     - "keep-updated=True"
 
 
     # - name: Add YUM options for the repository
