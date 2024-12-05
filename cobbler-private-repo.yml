@@ -4,12 +4,13 @@
   become: true
   vars:
     cobbler_repo_name: "example_repo"
-    cobbler_repo_url: "https://example.com/repo"
+    # cobbler_repo_url: "https://example.com/repo"
+    cobbler_repo_url: "https://your_username:your_password@example.com/dnf/repopath/"
     cobbler_gpg_key_url: "https://example.com/repo-key.gpg"
     cobbler_gpg_key_path: "/etc/pki/rpm-gpg/example-repo-key.gpg"
     cobbler_repo_creds_path: "/etc/cobbler/example_repo_creds"
-    cobbler_repo_user: "repo_user"
-    cobbler_repo_password: "repo_password"
+    # cobbler_repo_user: "repo_user"
+    # cobbler_repo_password: "repo_password"
 
   tasks:
     - name: Enable EPEL repository
@@ -49,13 +50,13 @@
         dest: "{{ cobbler_gpg_key_path }}"
         mode: '0644'
 
-    - name: Create Cobbler repo credentials file
-      ansible.builtin.copy:
-        dest: "{{ cobbler_repo_creds_path }}"
-        content: |
-          user:{{ cobbler_repo_user }}
-          password:{{ cobbler_repo_password }}
-        mode: '0600'
+    # - name: Create Cobbler repo credentials file
+    #   ansible.builtin.copy:
+    #     dest: "{{ cobbler_repo_creds_path }}"
+    #     content: |
+    #       user:{{ cobbler_repo_user }}
+    #       password:{{ cobbler_repo_password }}
+    #     mode: '0600'
 
     - name: Add the repository to Cobbler
       ansible.builtin.command: >
@@ -64,15 +65,25 @@
         --mirror={{ cobbler_repo_url }}
         --mirror-locally=Y
         --arch=x86_64
-        --breed=rsync
+        --breed=yum
       args:
         creates: "/var/lib/cobbler/repo_mirror/{{ cobbler_repo_name }}"
 
-    - name: Add YUM options for the repository
+    - name: Reinforce breed and keep-update
       ansible.builtin.command: >
         cobbler repo edit
         --name={{ cobbler_repo_name }}
-        --yumopts="--config {{ cobbler_repo_creds_path }}"
+        --{{ item }}
+      loop:
+        - "breed=yum"
+        - "keep-updated=True"
+
+
+    # - name: Add YUM options for the repository
+    #   ansible.builtin.command: >
+    #     cobbler repo edit
+    #     --name={{ cobbler_repo_name }}
+    #     --yumopts="--config {{ cobbler_repo_creds_path }}"
 
     - name: Synchronize the repository
       ansible.builtin.command: cobbler reposync
