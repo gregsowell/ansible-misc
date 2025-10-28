@@ -4,6 +4,6 @@
   gather_facts: false
   tasks:
     - name: Show variable from group_vars file
-      asible.builtin.debug:
+      ansible.builtin.debug:
         # msg: "The value of my_variable is {{ my_variable }}"
         var: hostvars.inventory_hostname.taco
