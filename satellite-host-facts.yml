@@ -4,5 +4,6 @@
   gather_facts: false
   tasks:
     - name: display testparm1 variable
+      when: hostvars[inventory_hostname].testparm1 is defined
       ansible.builtin.debug:
-        var: hostvars[inventory_hostname].testparm1 | default(omit)
+        var: hostvars[inventory_hostname].testparm1
