@@ -1,0 +1,8 @@
+---
+- name: Display the testparm1 variable for all hosts in a Satellite synced inventory
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: display testparm1 variable
+      ansible.builtin.debug:
+        var: hostvars[inventory_hostname].testparm1 | default(omit)
