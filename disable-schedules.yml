@@ -1,0 +1,29 @@
+---
+- name: Playbook to gather all AAP 2.5 and above schedules and disable them
+  hosts: localhost
+  gather_facts: false
+  vars:
+    controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+    controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
+    controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
+    controller_validate_certs: false
+  tasks:
+    - name: Gather all schedules using AAP 2.5+ API
+      ansible.builtin.uri:
+        url: "https://{{ controller_host }}/api/controller/v2/schedules/"
+        method: GET
+        user: "{{ controller_username }}"
+        password: "{{ controller_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ controller_validate_certs }}"
+        status_code: 200
+      register: schedules_response
+
+    - name: Display all schedules
+      ansible.builtin.debug:
+        msg: "Found {{ schedules_response.json.count }} schedules"
+
+    - name: Display schedule details
+      ansible.builtin.debug:
+        var: schedules_response.json.results
+    
