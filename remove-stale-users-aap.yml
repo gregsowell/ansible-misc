@@ -7,7 +7,6 @@
     aap_users_url: "https://ansible.example.com/api/gateway/v1/users/"
     validate_certs: false
     page_size: 200
-
     controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
     controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
 
@@ -27,21 +26,22 @@
       register: users_resp
       changed_when: false
 
-    - name: Show users (compact) - no community.general needed
-      ansible.builtin.debug:
-        msg: >-
-          {{
-            users_resp.json.results
-            | map('dict2items')
-            | list
-          }}
+    - name: Build compact user list
+      ansible.builtin.set_fact:
+        users_compact: "{{ (users_compact | default([])) + [ {
+          'id': item.id,
+          'username': item.username,
+          'email': item.email | default(''),
+          'is_superuser': item.is_superuser | default(false),
+          'last_login': item.last_login | default('')
+        } ] }}"
+      loop: "{{ users_resp.json.results | default([]) }}"
       changed_when: false
 
-    - name: Show users (clean compact dicts)
+    - name: Show users (compact)
       ansible.builtin.debug:
-        msg: >-
-          {{
-            users_resp.json.results
-            | map('extract', {'id':'id','username':'username','email':'email','is_superuser':'is_superuser','last_login':'last_login'})
-            | list
-          }}
+        var: users_compact
+
+    - name: Show usernames only
+      ansible.builtin.debug:
+        msg: "{{ users_compact | map(attribute='username') | list }}"
