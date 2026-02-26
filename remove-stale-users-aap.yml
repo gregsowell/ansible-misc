@@ -42,7 +42,7 @@
         validate_certs: "{{ validate_certs }}"
       register: users_page
       until: next_url is none
-      retries: 1000
+      retries: 20
       delay: 0
       failed_when: users_page.status != 200
       changed_when: false
