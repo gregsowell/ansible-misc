@@ -9,6 +9,10 @@
 
     # export AAP_TOKEN="...."
     aap_token: "{{ lookup('env', 'AAP_TOKEN') }}"
+  # testing controller creds for this
+    controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+    controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
+    controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
 
     inactive_days: 35
     page_size: 200
@@ -46,9 +50,12 @@
       ansible.builtin.uri:
         url: "{{ next_url }}"
         method: GET
-        headers:
-          Authorization: "Bearer {{ aap_token }}"
-          Accept: "application/json"
+        user: "{{ controller_username }}"
+        password: "{{ controller_password }}"
+        force_basic_auth: true
+        # headers:
+        #   Authorization: "Bearer {{ aap_token }}"
+        #   Accept: "application/json"
         return_content: true
         validate_certs: "{{ validate_certs }}"
       register: page
@@ -105,9 +112,12 @@
       ansible.builtin.uri:
         url: "{{ aap_base_url ~ users_endpoint ~ item.id ~ '/' }}"
         method: DELETE
-        headers:
-          Authorization: "Bearer {{ aap_token }}"
-          Accept: "application/json"
+        # headers:
+        #   Authorization: "Bearer {{ aap_token }}"
+        #   Accept: "application/json"
+        user: "{{ controller_username }}"
+        password: "{{ controller_password }}"
+        force_basic_auth: true
         validate_certs: "{{ validate_certs }}"
         status_code: [204, 202, 200]
       loop: "{{ delete_candidates }}"
