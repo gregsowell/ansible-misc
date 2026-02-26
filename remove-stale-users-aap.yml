@@ -27,10 +27,21 @@
       register: users_resp
       changed_when: false
 
-    - name: Show users (compact)
+    - name: Show users (compact) - no community.general needed
       ansible.builtin.debug:
-        msg: "{{ users_resp.json.results | json_query('[].{id:id, username:username, email:email, is_superuser:is_superuser, last_login:last_login}') }}"
+        msg: >-
+          {{
+            users_resp.json.results
+            | map('dict2items')
+            | list
+          }}
+      changed_when: false
 
-    - name: Show usernames only
+    - name: Show users (clean compact dicts)
       ansible.builtin.debug:
-        msg: "{{ users_resp.json.results | map(attribute='username') | list }}"
+        msg: >-
+          {{
+            users_resp.json.results
+            | map('extract', {'id':'id','username':'username','email':'email','is_superuser':'is_superuser','last_login':'last_login'})
+            | list
+          }}
