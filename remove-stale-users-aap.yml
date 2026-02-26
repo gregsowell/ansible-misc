@@ -4,17 +4,15 @@
   gather_facts: false
 
   vars:
-    aap_base_url: "https://base-url-of-your-aap-gateway"
+    aap_base_url: "https://aap.example.com"  # <-- Set your AAP Gateway base URL here
     users_endpoint: "/api/gateway/v1/users/"
 
-    # Put your token in an env var:
     # export AAP_TOKEN="...."
     aap_token: "{{ lookup('env', 'AAP_TOKEN') }}"
 
     inactive_days: 35
     page_size: 200
 
-    # Safety
     dry_run: true
     validate_certs: false
     exclude_superusers: true
@@ -36,53 +34,54 @@
     - name: Compute inactivity cutoff timestamp (UTC)
       ansible.builtin.set_fact:
         cutoff_iso: "{{ lookup('pipe', 'date -u -d \"' ~ inactive_days ~ ' days ago\" +%Y-%m-%dT%H:%M:%SZ') }}"
-        cutoff_dt: "{{ (lookup('pipe', 'date -u -d \"' ~ inactive_days ~ ' days ago\" +%Y-%m-%dT%H:%M:%SZ')) | to_datetime }}"
+        cutoff_dt: "{{ cutoff_iso | to_datetime }}"
 
     - name: Initialize pagination
       ansible.builtin.set_fact:
         next_url: "{{ aap_base_url ~ users_endpoint ~ '?page_size=' ~ page_size }}"
         all_users: []
 
-    - name: Fetch all users (follow pagination)
-      block:
-        - name: GET current page
-          ansible.builtin.uri:
-            url: "{{ next_url }}"
-            method: GET
-            headers:
-              Authorization: "Bearer {{ aap_token }}"
-              Accept: "application/json"
-            return_content: true
-            validate_certs: "{{ validate_certs }}"
-          register: page
-          changed_when: false
-          failed_when: page.status != 200
-
-        - name: Append results and advance
-          ansible.builtin.set_fact:
-            all_users: "{{ all_users + (page.json.results | default([])) }}"
-            next_url: "{{ page.json.next if (page.json.next is not none) else none }}"
+    # We repeat these two tasks using "until" on the GET task, not a block.
+    - name: Fetch a page of users
+      ansible.builtin.uri:
+        url: "{{ next_url }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+          Accept: "application/json"
+        return_content: true
+        validate_certs: "{{ validate_certs }}"
+      register: page
+      changed_when: false
+      failed_when: page.status != 200
       until: next_url is none
       retries: 200
       delay: 0
 
+    - name: Accumulate results and advance pagination (single pass)
+      ansible.builtin.set_fact:
+        all_users: "{{ all_users + (page.json.results | default([])) }}"
+        next_url: "{{ page.json.next if (page.json.next is not none) else none }}"
+      when: page is defined
+
+    - name: Continue pagination until next_url is none
+      ansible.builtin.include_tasks: _paginate_gateway_users.yml
+      when: next_url is not none
+
     - name: Build delete candidate list
       ansible.builtin.set_fact:
         delete_candidates: []
-      changed_when: false
 
     - name: Evaluate each user against cutoff
       ansible.builtin.set_fact:
         delete_candidates: "{{ delete_candidates + [item] }}"
       loop: "{{ all_users }}"
       vars:
-        # Normalize "2026-02-26T16:35:57.211455Z" -> "2026-02-26T16:35:57Z" for safer parsing
         last_login_norm: "{{ (item.last_login | string) | regex_replace('\\.\\d+Z$', 'Z') }}"
         last_login_dt: "{{ last_login_norm | to_datetime }}"
       when:
         - item.username not in protected_usernames
         - not (exclude_superusers and (item.is_superuser | default(false) | bool))
-        # Include users with null last_login only if you enable it
         - >
           (
             (item.last_login is not none) and
@@ -102,14 +101,14 @@
           count: "{{ delete_candidates | length }}"
           users: "{{ delete_candidates | map(attribute='username') | list }}"
 
-    # - name: Delete inactive users (only when dry_run=false)
-    #   ansible.builtin.uri:
-    #     url: "{{ aap_base_url ~ users_endpoint ~ item.id ~ '/' }}"
-    #     method: DELETE
-    #     headers:
-    #       Authorization: "Bearer {{ aap_token }}"
-    #       Accept: "application/json"
-    #     validate_certs: "{{ validate_certs }}"
-    #     status_code: [204, 202, 200]
-    #   loop: "{{ delete_candidates }}"
-    #   when: not dry_run
+    - name: Delete inactive users (only when dry_run=false)
+      ansible.builtin.uri:
+        url: "{{ aap_base_url ~ users_endpoint ~ item.id ~ '/' }}"
+        method: DELETE
+        headers:
+          Authorization: "Bearer {{ aap_token }}"
+          Accept: "application/json"
+        validate_certs: "{{ validate_certs }}"
+        status_code: [204, 202, 200]
+      loop: "{{ delete_candidates }}"
+      when: not dry_run

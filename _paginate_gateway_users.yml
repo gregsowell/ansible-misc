@@ -1,0 +1,22 @@
+---
+- name: Fetch next page of users
+  ansible.builtin.uri:
+    url: "{{ next_url }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ aap_token }}"
+      Accept: "application/json"
+    return_content: true
+    validate_certs: "{{ validate_certs }}"
+  register: page
+  changed_when: false
+  failed_when: page.status != 200
+
+- name: Accumulate results and advance pagination
+  ansible.builtin.set_fact:
+    all_users: "{{ all_users + (page.json.results | default([])) }}"
+    next_url: "{{ page.json.next if (page.json.next is not none) else none }}"
+
+- name: Keep paging while there is a next URL
+  ansible.builtin.include_tasks: _paginate_gateway_users.yml
+  when: next_url is not none
