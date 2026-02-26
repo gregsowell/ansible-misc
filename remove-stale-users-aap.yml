@@ -5,64 +5,68 @@
 
   vars:
     aap_users_url: "https://ansible.example.com/api/gateway/v1/users/"
-    # Recommended: export AAP_TOKEN='...'
-    # aap_token: "{{ lookup('env', 'AAP_TOKEN') }}"
     validate_certs: false
-    page_size: 200  # optional; API may honor it (Django-style). If not, it's harmless.
-    controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+    page_size: 200
+
     controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
     controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
-    
-
 
   tasks:
-    # - name: Fail if token not provided
-    #   ansible.builtin.assert:
-    #     that:
-    #       - aap_token | length > 0
-    #     fail_msg: "Set AAP_TOKEN environment variable (Bearer token) before running."
-
-    - name: Initialize pagination variables
+    - name: Initialize
       ansible.builtin.set_fact:
         next_url: "{{ aap_users_url }}?page_size={{ page_size }}"
         all_users: []
 
-    - name: Fetch all pages of users
+    - name: Fetch pages until next is null
       ansible.builtin.uri:
         url: "{{ next_url }}"
         method: GET
-        # headers:
-        #   Authorization: "Bearer {{ aap_token }}"
-        #   Accept: "application/json"
         user: "{{ controller_username }}"
         password: "{{ controller_password }}"
         force_basic_auth: true
         return_content: true
         status_code: 200
         validate_certs: "{{ validate_certs }}"
-      register: users_page
-      until: next_url is none
-      retries: 20
-      delay: 0
-      failed_when: users_page.status != 200
+        headers:
+          Accept: "application/json"
+      register: page
       changed_when: false
-      loop: "{{ [1] }}"     # single-iteration loop so we can drive pagination with "until"
-      loop_control:
-        label: "{{ next_url }}"
-      vars:
-        # Update facts each "until" iteration
-        _update_facts: "{{ (
-          all_users.extend(users_page.json.results | default([])),
-          (next_url := users_page.json.next)
-        ) }}"
+
+    - name: Append results from first page
+      ansible.builtin.set_fact:
+        all_users: "{{ all_users + (page.json.results | default([])) }}"
+        next_url: "{{ page.json.next }}"
+
+    - name: Fetch remaining pages (if any)
+      ansible.builtin.uri:
+        url: "{{ next_url }}"
+        method: GET
+        url_username: "{{ controller_username }}"
+        url_password: "{{ controller_password }}"
+        force_basic_auth: true
+        return_content: true
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+        headers:
+          Accept: "application/json"
+      register: page
+      changed_when: false
+      when: next_url is not none
+      until: page.json.next is none
+      retries: 1000
+      delay: 0
+
+    - name: Append results from remaining pages (including last one)
+      ansible.builtin.set_fact:
+        all_users: "{{ all_users + (page.json.results | default([])) }}"
       when: next_url is not none
 
     - name: Show users (compact)
       ansible.builtin.debug:
         msg: >-
           {{ all_users
-             | map('extract', {'id':'id','username':'username','email':'email','is_superuser':'is_superuser','last_login':'last_login'})
-             | list }}
+             | json_query('[].{id: id, username: username, email: email, is_superuser: is_superuser, last_login: last_login}')
+          }}
 
     - name: Show usernames only
       ansible.builtin.debug:
