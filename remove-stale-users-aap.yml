@@ -102,14 +102,14 @@
           count: "{{ delete_candidates | length }}"
           users: "{{ delete_candidates | map(attribute='username') | list }}"
 
-    - name: Delete inactive users (only when dry_run=false)
-      ansible.builtin.uri:
-        url: "{{ aap_base_url ~ users_endpoint ~ item.id ~ '/' }}"
-        method: DELETE
-        headers:
-          Authorization: "Bearer {{ aap_token }}"
-          Accept: "application/json"
-        validate_certs: "{{ validate_certs }}"
-        status_code: [204, 202, 200]
-      loop: "{{ delete_candidates }}"
-      when: not dry_run
+    # - name: Delete inactive users (only when dry_run=false)
+    #   ansible.builtin.uri:
+    #     url: "{{ aap_base_url ~ users_endpoint ~ item.id ~ '/' }}"
+    #     method: DELETE
+    #     headers:
+    #       Authorization: "Bearer {{ aap_token }}"
+    #       Accept: "application/json"
+    #     validate_certs: "{{ validate_certs }}"
+    #     status_code: [204, 202, 200]
+    #   loop: "{{ delete_candidates }}"
+    #   when: not dry_run
