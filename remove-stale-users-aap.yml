@@ -17,50 +17,32 @@
         next_url: "{{ aap_users_url }}?page_size={{ page_size }}"
         all_users: []
 
-    - name: Fetch first page
-      ansible.builtin.uri:
-        url: "{{ next_url }}"
-        method: GET
-        url_username: "{{ controller_username }}"
-        url_password: "{{ controller_password }}"
-        force_basic_auth: true
-        return_content: true
-        status_code: 200
-        validate_certs: "{{ validate_certs }}"
-        headers:
-          Accept: "application/json"
-      register: page
-      changed_when: false
+    - name: Keep fetching pages until next_url is empty
+      block:
+        - name: GET current page
+          ansible.builtin.uri:
+            url: "{{ next_url }}"
+            method: GET
+            url_username: "{{ controller_username }}"
+            url_password: "{{ controller_password }}"
+            force_basic_auth: true
+            return_content: true
+            status_code: 200
+            validate_certs: "{{ validate_certs }}"
+            headers:
+              Accept: "application/json"
+          register: page
+          changed_when: false
 
-    - name: Append first page results and set next_url
-      ansible.builtin.set_fact:
-        all_users: "{{ all_users + (page.json.results | default([])) }}"
-        # Normalize "next": treat null/""/missing as None
-        next_url: "{{ (page.json.next | default('') | string | trim) if (page.json.next | default('') | string | trim | length > 0) else none }}"
-
-    - name: Fetch remaining pages (while next_url is set)
-      ansible.builtin.uri:
-        url: "{{ next_url }}"
-        method: GET
-        url_username: "{{ controller_username }}"
-        url_password: "{{ controller_password }}"
-        force_basic_auth: true
-        return_content: true
-        status_code: 200
-        validate_certs: "{{ validate_certs }}"
-        headers:
-          Accept: "application/json"
-      register: page
-      changed_when: false
-      when: next_url is not none
-      until: (page.json.next | default('') | string | trim | length) == 0
+        - name: Append results and update next_url
+          ansible.builtin.set_fact:
+            all_users: "{{ all_users + (page.json.results | default([])) }}"
+            # Normalize next into a *real* URL string or '' (empty)
+            next_url: "{{ page.json.next | default('') | string | trim }}"
+      # Re-run this block as long as next_url looks like an actual URL
+      until: next_url | length == 0 or next_url == 'None'
       retries: 20
       delay: 0
-
-    - name: Append remaining page results (if we fetched any)
-      ansible.builtin.set_fact:
-        all_users: "{{ all_users + (page.json.results | default([])) }}"
-      when: next_url is not none
 
     - name: Show users (compact)
       ansible.builtin.debug:
