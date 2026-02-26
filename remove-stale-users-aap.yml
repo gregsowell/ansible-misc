@@ -16,9 +16,9 @@
 
     # Safety
     dry_run: true
-    validate_certs: true
+    validate_certs: false
     exclude_superusers: true
-    include_never_logged_in: false
+    include_never_logged_in: true
 
     protected_usernames:
       - admin
