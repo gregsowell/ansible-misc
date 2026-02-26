@@ -35,9 +35,10 @@
     #       - aap_token | length > 0
     #     fail_msg: "Set AAP_TOKEN in your environment (Bearer token for AAP Gateway API)."
 
-    - name: Compute cutoff epoch (UTC) for inactivity window
+    - name: Compute cutoff epoch (UTC) for inactivity window (no facts)
       ansible.builtin.set_fact:
-        cutoff_epoch: "{{ (ansible_date_time.epoch | int) - (inactive_days | int * 86400) }}"
+        now_epoch: "{{ now(utc=True).strftime('%s') | int }}"
+        cutoff_epoch: "{{ (now(utc=True).strftime('%s') | int) - (inactive_days | int * 86400) }}"
 
     - name: Initialize pagination
       ansible.builtin.set_fact:
