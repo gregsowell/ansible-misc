@@ -28,12 +28,12 @@
       - _token_service_user
 
   tasks:
-    - name: Ensure token is provided
-      ansible.builtin.assert:
-        that:
-          - aap_token is defined
-          - aap_token | length > 0
-        fail_msg: "Set AAP_TOKEN in your environment (Bearer token for AAP Gateway API)."
+    # - name: Ensure token is provided
+    #   ansible.builtin.assert:
+    #     that:
+    #       - aap_token is defined
+    #       - aap_token | length > 0
+    #     fail_msg: "Set AAP_TOKEN in your environment (Bearer token for AAP Gateway API)."
 
     - name: Compute inactivity cutoff timestamp (UTC)
       ansible.builtin.set_fact:
