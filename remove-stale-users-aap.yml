@@ -12,14 +12,9 @@
     controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
 
   tasks:
-    - name: Initialize
-      ansible.builtin.set_fact:
-        next_url: "{{ aap_users_url }}?page_size={{ page_size }}"
-        all_users: []
-
-    - name: Fetch page(s) while next_url is a real URL
+    - name: Get users
       ansible.builtin.uri:
-        url: "{{ next_url }}"
+        url: "{{ aap_users_url }}?page_size={{ page_size }}"
         method: GET
         url_username: "{{ controller_username }}"
         url_password: "{{ controller_password }}"
@@ -29,27 +24,13 @@
         validate_certs: "{{ validate_certs }}"
         headers:
           Accept: "application/json"
-      register: page
+      register: users_resp
       changed_when: false
-      # Keep re-running THIS task until API says there is no next page
-      until: (page.json.next | default('') | string | trim | length) == 0
-      retries: 20
-      delay: 0
-      # IMPORTANT: each retry is a new HTTP call, so we must update next_url between retries
-      vars:
-        _unused: "{{ lookup('ansible.builtin.pipe', 'true') }}"
-      notify: update_pagination_state
 
     - name: Show users (compact)
       ansible.builtin.debug:
-        msg: "{{ all_users | json_query('[].{id:id, username:username, email:email, is_superuser:is_superuser, last_login:last_login}') }}"
+        msg: "{{ users_resp.json.results | json_query('[].{id:id, username:username, email:email, is_superuser:is_superuser, last_login:last_login}') }}"
 
     - name: Show usernames only
       ansible.builtin.debug:
-        msg: "{{ all_users | map(attribute='username') | list }}"
-
-  handlers:
-    - name: update_pagination_state
-      ansible.builtin.set_fact:
-        all_users: "{{ all_users + (page.json.results | default([])) }}"
-        next_url: "{{ page.json.next | default('') | string | trim }}"
+        msg: "{{ users_resp.json.results | map(attribute='username') | list }}"
