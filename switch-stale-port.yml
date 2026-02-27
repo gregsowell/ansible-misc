@@ -61,7 +61,7 @@
           ((mins_down / 1440) | round(0, 'floor'))
           }}
         is_link_not_connected: "{{ detail_text is search('\\(Link not connected\\)') }}"
-        is_one_gig: "{{ detail_text is search('BW 1000000 Kbit') }}"
+        is_one_gig: "{{ detail_text is search('BW 10000000 Kbit') }}"
         is_reserved: "{{ port_description is search(reserved_description_regex) }}"
         is_uplink_interface: "{{ port_name in uplink_interfaces }}"
         is_uplink_description: "{{ port_description is search(uplink_description_regex) }}"
