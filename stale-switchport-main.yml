@@ -20,6 +20,34 @@
       set_fact:
         interface_blocks: "{{ interface_status.stdout[0] | regex_findall('(?ms)^Ethernet\\S+.*?(?=^Ethernet\\S+|\\Z)') }}"
 
+    - name: Build interface flap age details
+      set_fact:
+        interface_flap_days: "{{ interface_flap_days | default([]) + [ {
+          'interface': item.splitlines()[0].split(' is ')[0],
+          'last_link_flapped': flap_value,
+          'days_since_last_flap': flap_days
+        } ] }}"
+      vars:
+        flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
+        flap_days: >-
+          {% if flap_value == 'never' %}
+          never
+          {% else %}
+          {{
+            ((flap_value | regex_search('(\\d+)week\\(s\\)', '\\1') | default('0', true) | int) * 7)
+            +
+            (flap_value | regex_search('(\\d+)day\\(s\\)', '\\1') | default('0', true) | int)
+          }}
+          {% endif %}
+      loop: "{{ interface_blocks }}"
+
+    - name: Display days since last link flap per interface
+      debug:
+        msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }} ({{ item.days_since_last_flap }} day(s))"
+      loop: "{{ interface_flap_days }}"
+      loop_control:
+        label: "{{ item.interface }}"
+
     # - name: Build list of dictionaries for each interface block
     #   set_fact:
     #     interface_details: "{{ interface_details | default([]) + [ {
@@ -43,6 +71,8 @@
     #     - "'Port mode is access' in item" # Interface is not a trunk
     #     - "'Reserved' not in item" # Interface is not reserved
     #     # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+
+    
 
     - name: Save CSV headers
       ansible.builtin.lineinfile:
