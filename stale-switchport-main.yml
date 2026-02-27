@@ -29,21 +29,14 @@
         } ] }}"
       vars:
         flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
-        flap_days: >-
-          {% if flap_value in ['never', 'unknown'] %}
-          {{ flap_value }}
-          {% else %}
-          {{
-            ((flap_value | regex_findall('\\d+(?=week\\(s\\))') | first | default('0', true) | int) * 7)
-            +
-            (flap_value | regex_findall('\\d+(?=day\\(s\\))') | first | default('0', true) | int)
-          }}
-          {% endif %}
+        flap_weeks: "{{ flap_value | regex_search('[0-9]+week\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
+        flap_day_count: "{{ flap_value | regex_search('[0-9]+day\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
+        flap_days: "{{ flap_value if flap_value in ['never', 'unknown'] else ((flap_weeks | int * 7) + (flap_day_count | int)) }}"
       loop: "{{ interface_blocks }}"
 
     - name: Display days since last link flap per interface
       debug:
-        msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }}{% if item.days_since_last_flap is number %} ({{ item.days_since_last_flap }} day(s)){% endif %}"
+        msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }}{% if item.days_since_last_flap not in ['never', 'unknown'] %} ({{ item.days_since_last_flap }} day(s)){% endif %}"
       loop: "{{ interface_flap_days }}"
       loop_control:
         label: "{{ item.interface }}"
