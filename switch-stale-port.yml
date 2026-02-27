@@ -30,17 +30,15 @@
     #   ansible.builtin.debug:
     #     var: interface_output
 
-    - name: Normalize show interface output text
+    - name: Initialize interface list
       ansible.builtin.set_fact:
-        interface_blob: "{{ interface_output.stdout[0] | default('') | regex_replace('\\r', '') }}"
+        interface_list: []
 
     - name: Build interface list from show interface output
       ansible.builtin.set_fact:
-        interface_list: >-
-          {{
-            interface_blob
-            | regex_findall('(?m)^(\\S+) is (?:up|down)')
-          }}
+        interface_list: "{{ interface_list + [((item | trim).split(' is '))[0]] }}"
+      loop: "{{ interface_output.stdout_lines[0] | default([]) }}"
+      when: (item | trim) is match('^\\S+ is (up|down)')
 
     - name: Gather per-interface show output
       when: interface_list | length > 0
