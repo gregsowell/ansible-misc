@@ -57,18 +57,34 @@
         content: "{{ all_job_templates | to_nice_json }}"
         mode: "0644"
 
+    - name: Get full details for each job template
+      uri:
+        url: "{{ sat_api_base }}/{{ item.id }}"
+        method: GET
+        user: "{{ satellite_user }}"
+        password: "{{ satellite_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ satellite_validate_certs }}"
+        return_content: true
+        status_code: 200
+      loop: "{{ all_job_templates }}"
+      register: detailed_job_template_responses
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Build list of detailed job templates
+      set_fact:
+        detailed_job_templates: "{{ detailed_job_template_responses.results | map(attribute='json') | list }}"
+
     - name: Save each job template to an individual file
       copy:
         dest: "{{ playbook_dir }}/{{ backup_directory }}/{{ item.name | regex_replace('[^A-Za-z0-9._-]+', '_') }}_{{ item.id }}.json"
         content: "{{ item | to_nice_json }}"
         mode: "0644"
-      loop: "{{ all_job_templates }}"
+      loop: "{{ detailed_job_templates }}"
       loop_control:
         label: "{{ item.name }}"
 
     - name: Report backup summary
       debug:
-        msg: "Backed up {{ all_job_templates | length }} job templates to {{ playbook_dir }}/{{ backup_directory }}"
-
-    - name: Issue quick command to show one of the backup files content
-      shell: "cat /runner/project/backup/job_templates/Ansible_Roles_-_Install_from_Galaxy_235.json"
+        msg: "Backed up {{ detailed_job_templates | length }} detailed job templates to {{ playbook_dir }}/{{ backup_directory }}"
