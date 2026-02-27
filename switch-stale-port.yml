@@ -66,12 +66,11 @@
         is_reserved: "{{ port_description is search(reserved_description_regex) }}"
         is_uplink_interface: "{{ port_name in uplink_interfaces }}"
         is_uplink_description: "{{ port_description is search(uplink_description_regex) }}"
+        action_type: write
+        write_line: >-
+          {{ inventory_hostname }},{{ port_name }},{{ port_description | replace(',', ';') }},{{ last_input }},{{ disconnected_days | int }}
       ansible.builtin.include_role:
-      name: ansible-report
-      vars:
-      action_type: write
-      write_line: >-
-        {{ inventory_hostname }},{{ port_name }},{{ port_description | replace(',', ';') }},{{ last_input }},{{ disconnected_days | int }}
+        name: ansible-report
       loop: "{{ interface_detail.results | default([]) }}"
 
     # - name: Send stale-port report email
