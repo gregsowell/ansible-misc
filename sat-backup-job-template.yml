@@ -1,0 +1,71 @@
+---
+- name: Backup satellite 6.12 job templates via the API to a local directory
+  hosts: localhost
+  gather_facts: false
+  vars:
+    satellite_url: "https://satellite.example.com"
+    satellite_user: "admin"
+    satellite_password: "password"
+    backup_directory: "backup/job_templates"
+    satellite_validate_certs: false
+    sat_api_base: "{{ satellite_url }}/api/v2/job_templates"
+    sat_per_page: 100
+  tasks:
+    - name: Ensure backup directory exists
+      file:
+        path: "{{ playbook_dir }}/{{ backup_directory }}"
+        state: directory
+        mode: "0755"
+
+    - name: Get first page of job templates from Satellite API
+      uri:
+        url: "{{ sat_api_base }}?page=1&per_page={{ sat_per_page }}"
+        method: GET
+        user: "{{ satellite_user }}"
+        password: "{{ satellite_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ satellite_validate_certs }}"
+        return_content: true
+        status_code: 200
+      register: first_page
+
+    - name: Build list of remaining pages
+      set_fact:
+        remaining_pages: "{{ range(2, (first_page.json.total / first_page.json.per_page) | round(0, 'ceil') | int + 1) | list }}"
+
+    - name: Get remaining pages of job templates from Satellite API
+      uri:
+        url: "{{ sat_api_base }}?page={{ item }}&per_page={{ sat_per_page }}"
+        method: GET
+        user: "{{ satellite_user }}"
+        password: "{{ satellite_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ satellite_validate_certs }}"
+        return_content: true
+        status_code: 200
+      loop: "{{ remaining_pages }}"
+      register: remaining_pages_responses
+      when: remaining_pages | length > 0
+
+    - name: Combine job templates from all pages
+      set_fact:
+        all_job_templates: "{{ first_page.json.results + (remaining_pages_responses.results | default([]) | map(attribute='json') | map(attribute='results') | flatten) }}"
+
+    - name: Save full job template index
+      copy:
+        dest: "{{ playbook_dir }}/{{ backup_directory }}/job_templates_index.json"
+        content: "{{ all_job_templates | to_nice_json }}"
+        mode: "0644"
+
+    - name: Save each job template to an individual file
+      copy:
+        dest: "{{ playbook_dir }}/{{ backup_directory }}/{{ item.name | regex_replace('[^A-Za-z0-9._-]+', '_') }}_{{ item.id }}.json"
+        content: "{{ item | to_nice_json }}"
+        mode: "0644"
+      loop: "{{ all_job_templates }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Report backup summary
+      debug:
+        msg: "Backed up {{ all_job_templates | length }} job templates to {{ playbook_dir }}/{{ backup_directory }}"
