@@ -37,7 +37,7 @@
     - name: Add stale disconnected 1G interfaces to report
       when: 
         # - interface_blocks | length > 0
-        - is_link_not_connected
+        # - is_link_not_connected
         # - is_one_gig
         # - disconnected_days | int > stale_days_threshold | int
         # - not is_reserved
