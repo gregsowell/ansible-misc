@@ -14,15 +14,15 @@
       set_fact:
         interface_blocks: "{{ interface_status.stdout[0] | regex_findall('(?ms)^Ethernet\\S+.*?(?=^Ethernet\\S+|\\Z)') }}"
 
-    - name: Build list of dictionaries for each interface block
-      set_fact:
-        interface_details: "{{ interface_details | default([]) + [ {
-          'interface': item.splitlines()[0].split(' is ')[0],
-          'status_line': item.splitlines()[0],
-          'block_lines': item.splitlines(),
-          'raw_block': item
-        } ] }}"
-      loop: "{{ interface_blocks }}"
+    # - name: Build list of dictionaries for each interface block
+    #   set_fact:
+    #     interface_details: "{{ interface_details | default([]) + [ {
+    #       'interface': item.splitlines()[0].split(' is ')[0],
+    #       'status_line': item.splitlines()[0],
+    #       'block_lines': item.splitlines(),
+    #       'raw_block': item
+    #     } ] }}"
+    #   loop: "{{ interface_blocks }}"
 
     # - name: Display parsed interface dictionaries
     #   debug:
@@ -30,6 +30,6 @@
 
     - name: Print out all interface names that are "Link not connected"
       debug:
-        msg: "Interface {{ item.interface }} is Link not connected"
-      loop: "{{ interface_details }}"
-      when: "'Link not connected' in item.status_line"
+        msg: "Interface {{ item.splitlines()[0].split(' is ')[0] }} is Link not connected"
+      loop: "{{ interface_blocks }}"
+      when: "'Link not connected' in item"
