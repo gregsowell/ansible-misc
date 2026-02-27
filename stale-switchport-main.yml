@@ -3,6 +3,7 @@
   hosts: nexus9k3
   gather_facts: false
   vars:
+    days_down: 20 # Number of days down to consider a port stale
     csv_destination: "{{ playbook_dir }}/stale_switchports.csv"
     headers: host,interface
     # csv_lines: 
@@ -20,26 +21,26 @@
       set_fact:
         interface_blocks: "{{ interface_status.stdout[0] | regex_findall('(?ms)^Ethernet\\S+.*?(?=^Ethernet\\S+|\\Z)') }}"
 
-    - name: Build interface flap age details
-      set_fact:
-        interface_flap_days: "{{ interface_flap_days | default([]) + [ {
-          'interface': item.splitlines()[0].split(' is ')[0],
-          'last_link_flapped': flap_value,
-          'days_since_last_flap': flap_days
-        } ] }}"
-      vars:
-        flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
-        flap_weeks: "{{ flap_value | regex_search('[0-9]+week\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
-        flap_day_count: "{{ flap_value | regex_search('[0-9]+day\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
-        flap_days: "{{ 0 if flap_value in ['never', 'unknown'] else ((flap_weeks | int * 7) + (flap_day_count | int)) }}"
-      loop: "{{ interface_blocks }}"
+    # - name: Build interface flap age details
+    #   set_fact:
+    #     interface_flap_days: "{{ interface_flap_days | default([]) + [ {
+    #       'interface': item.splitlines()[0].split(' is ')[0],
+    #       'last_link_flapped': flap_value,
+    #       'days_since_last_flap': flap_days
+    #     } ] }}"
+    #   vars:
+    #     flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
+    #     flap_weeks: "{{ flap_value | regex_search('[0-9]+week\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
+    #     flap_day_count: "{{ flap_value | regex_search('[0-9]+day\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
+    #     flap_days: "{{ 0 if flap_value in ['never', 'unknown'] else ((flap_weeks | int * 7) + (flap_day_count | int)) }}"
+    #   loop: "{{ interface_blocks }}"
 
-    - name: Display days since last link flap per interface
-      debug:
-        msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }} ({{ item.days_since_last_flap }} day(s))"
-      loop: "{{ interface_flap_days }}"
-      loop_control:
-        label: "{{ item.interface }}"
+    # - name: Display days since last link flap per interface
+    #   debug:
+    #     msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }} ({{ item.days_since_last_flap }} day(s))"
+    #   loop: "{{ interface_flap_days }}"
+    #   loop_control:
+    #     label: "{{ item.interface }}"
 
     # - name: Build list of dictionaries for each interface block
     #   set_fact:
@@ -83,8 +84,14 @@
         create: true
         state: present
       delegate_to: localhost
+      vars:
+        flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
+        flap_weeks: "{{ flap_value | regex_search('[0-9]+week\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
+        flap_day_count: "{{ flap_value | regex_search('[0-9]+day\\(s\\)') | default('0', true) | regex_replace('[^0-9]', '') | default('0', true) | int }}"
+        flap_days: "{{ 0 if flap_value in ['never', 'unknown'] else ((flap_weeks | int * 7) + (flap_day_count | int)) }}"
       loop: "{{ interface_blocks }}"
       when: 
+        - flap_days | int > 20 # checking to see if it's been down long enough
         - "'Link not connected' in item" # Interface is down
         - "'Port mode is access' in item" # Interface is not a trunk
         - "'Reserved' not in item" # Interface is not reserved
