@@ -26,4 +26,4 @@
 
     - name: Display parsed interface dictionaries
       debug:
-        var: interface_blocks
+        var: interface_details
