@@ -41,39 +41,43 @@
     #     - "'Reserved' not in item" # Interface is not reserved
     #     # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
 
-    - name: Save CSV headers
-      ansible.builtin.lineinfile:
-        dest: "{{ csv_destination }}"
-        line: "{{ headers }}"
-        create: true
-        state: present
-      delegate_to: localhost
-      run_once: true
-
-    - name: Save line to CSV file
-      ansible.builtin.lineinfile:
-        dest: "{{ csv_destination }}"
-        line: "{{ inventory_hostname }},{{ item.splitlines()[0].split(' is ')[0] }}"
-        create: true
-        state: present
-      delegate_to: localhost
-      loop: "{{ interface_blocks }}"
-      when: 
-        - "'Link not connected' in item" # Interface is down
-        - "'Port mode is access' in item" # Interface is not a trunk
-        - "'Reserved' not in item" # Interface is not reserved
-        # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
-
-    # - name: Save the matching port entry to a file
-    #   copy:
-    #     content: "{{ item.splitlines()[0].split(' is ')[0] }}"
+    # - name: Save CSV headers
+    #   ansible.builtin.lineinfile:
     #     dest: "{{ csv_destination }}"
+    #     line: "{{ headers }}"
+    #     create: true
+    #     state: present
+    #   delegate_to: localhost
+    #   run_once: true
+
+    # - name: Save line to CSV file
+    #   ansible.builtin.lineinfile:
+    #     dest: "{{ csv_destination }}"
+    #     line: "{{ inventory_hostname }},{{ item.splitlines()[0].split(' is ')[0] }}"
+    #     create: true
+    #     state: present
+    #   delegate_to: localhost
     #   loop: "{{ interface_blocks }}"
     #   when: 
     #     - "'Link not connected' in item" # Interface is down
     #     - "'Port mode is access' in item" # Interface is not a trunk
     #     - "'Reserved' not in item" # Interface is not reserved
     #     # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+
+    - name: Create a big variable to write to the file at once
+      set_fact:
+        csv_lines: "{{ csv_lines | default(headers) + [ inventory_hostname + ',' + item.splitlines()[0].split(' is ')[0] ] }}"
+      loop: "{{ interface_blocks }}"
+      when: 
+        - "'Link not connected' in item" # Interface is down
+        - "'Port mode is access' in item" # Interface is not a trunk
+        - "'Reserved' not in item' # Interface is not reserved
+        # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+
+    - name: Save the matching port entry to a file
+      copy:
+        content: "{{ csv_lines }}"
+        dest: "{{ csv_destination }}"
 
     - name: Display contents of csv_destination
       debug:
