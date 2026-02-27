@@ -16,7 +16,7 @@
     - name: Get candidate disconnected interfaces from status table
       cisco.nxos.nxos_command:
         commands:
-          - show interfaces status | include notconnect
+          - show int status | inc notconn
       register: interface_status
 
     - name: Build candidate interface list
