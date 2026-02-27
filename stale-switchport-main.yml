@@ -10,10 +10,20 @@
           - 'show int | b Ethernet1/'
       register: interface_status
 
-    - name: Create a list from interface_status that breaks when it sees "Ether * down" or "Ether * up"
+    - name: Split command output into per-interface blocks
       set_fact:
-        stale_switchports: "{{ interface_status.stdout[0].splitlines() | select('match', 'Ether.*(down|up)') | list }}"
-    
-    - name: Display the list of stale switchports
+        interface_blocks: "{{ interface_status.stdout[0] | regex_findall('(?ms)^Ethernet\\S+.*?(?=^Ethernet\\S+|\\Z)') }}"
+
+    - name: Build list of dictionaries for each interface block
+      set_fact:
+        interface_details: "{{ interface_details | default([]) + [ {
+          'interface': item.splitlines()[0].split(' is ')[0],
+          'status_line': item.splitlines()[0],
+          'block_lines': item.splitlines(),
+          'raw_block': item
+        } ] }}"
+      loop: "{{ interface_blocks }}"
+
+    - name: Display parsed interface dictionaries
       debug:
-        var: stale_switchports
+        var: interface_blocks
