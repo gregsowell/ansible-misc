@@ -14,7 +14,7 @@
 
   tasks:
     - name: Get candidate disconnected interfaces from status table
-      cisco.nxox.nxos_command:
+      cisco.nxos.nxos_command:
         commands:
           - show interfaces status | include notconnect
       register: interface_status
@@ -29,7 +29,7 @@
 
     - name: Gather detail for each candidate interface
       when: candidate_interfaces | length > 0
-      cisco.nxox.nxos_command:
+      cisco.nxos.nxos_command:
         commands:
           - "show interfaces {{ item }} | include line protocol|Description:|Last input|BW"
       loop: "{{ candidate_interfaces }}"
