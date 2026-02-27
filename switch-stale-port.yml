@@ -32,12 +32,11 @@
 
     - name: Build interface list from show interface output
       ansible.builtin.set_fact:
+        interface_blob: "{{ interface_output.stdout[0] | default('') | regex_replace('\\r', '') }}"
         interface_list: >-
           {{
-            (interface_output.stdout_lines[0] | default([]))
-            | select('match', '^\\S+ is (up|down)')
-            | map('regex_replace', '^(\\S+) is (?:up|down).*$', '\\1')
-            | list
+            interface_blob
+            | regex_findall('(?m)^(\\S+) is (?:up|down)')
           }}
 
     - name: Gather per-interface show output
