@@ -3,6 +3,9 @@
   hosts: nexus9k3
   gather_facts: false
   vars:
+    csv_destination: "{{ playbook_dir }}/stale_switchports.csv"
+    headers: host,interface
+
   tasks:
     - name: Issue a show interfaces on the switch
       nxos_command:
@@ -28,12 +31,50 @@
     #   debug:
     #     var: interface_details
 
-    - name: Print out all interface names that are "Link not connected"
-      debug:
-        msg: "Interface {{ item.splitlines()[0].split(' is ')[0] }} is Link not connected"
+    # - name: Print out all interface names that are "Link not connected"
+    #   debug:
+    #     msg: "Interface {{ item.splitlines()[0].split(' is ')[0] }} is Link not connected"
+    #   loop: "{{ interface_blocks }}"
+    #   when: 
+    #     - "'Link not connected' in item" # Interface is down
+    #     - "'Port mode is access' in item" # Interface is not a trunk
+    #     - "'Reserved' not in item" # Interface is not reserved
+    #     # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+
+    - name: Save CSV headers
+      ansible.builtin.lineinfile:
+        dest: "{{ csv_destination }}"
+        line: "{{ headers }}"
+        create: true
+        state: present
+      delegate_to: localhost
+      run_once: true
+
+    - name: Save line to CSV file
+      ansible.builtin.lineinfile:
+        dest: "{{ csv_destination }}"
+        line: "{{ inventory_hostname }},{{ item.splitlines()[0].split(' is ')[0] }}"
+        create: true
+        state: present
+      delegate_to: localhost
       loop: "{{ interface_blocks }}"
       when: 
         - "'Link not connected' in item" # Interface is down
         - "'Port mode is access' in item" # Interface is not a trunk
         - "'Reserved' not in item" # Interface is not reserved
         # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+
+    # - name: Save the matching port entry to a file
+    #   copy:
+    #     content: "{{ item.splitlines()[0].split(' is ')[0] }}"
+    #     dest: "{{ csv_destination }}"
+    #   loop: "{{ interface_blocks }}"
+    #   when: 
+    #     - "'Link not connected' in item" # Interface is down
+    #     - "'Port mode is access' in item" # Interface is not a trunk
+    #     - "'Reserved' not in item" # Interface is not reserved
+    #     # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+
+    - name: Display contents of csv_destination
+      debug:
+        msg: "Contents of {{ csv_destination }}:\n{{ lookup('file', csv_destination) }}"
