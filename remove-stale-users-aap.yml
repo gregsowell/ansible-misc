@@ -70,7 +70,7 @@
       changed_when: false
 
 
-        - name: Compute inactivity cutoff epoch (UTC) for 35 days
+    - name: Compute inactivity cutoff epoch (UTC) for 35 days
       ansible.builtin.set_fact:
         inactivity_days: 35
         cutoff_epoch: >-
