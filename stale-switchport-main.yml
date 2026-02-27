@@ -30,20 +30,20 @@
       vars:
         flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
         flap_days: >-
-          {% if flap_value == 'never' %}
-          never
+          {% if flap_value in ['never', 'unknown'] %}
+          {{ flap_value }}
           {% else %}
           {{
-            ((flap_value | regex_search('(\\d+)week\\(s\\)', '\\1') | default('0', true) | int) * 7)
+            ((flap_value | regex_findall('\\d+(?=week\\(s\\))') | first | default('0', true) | int) * 7)
             +
-            (flap_value | regex_search('(\\d+)day\\(s\\)', '\\1') | default('0', true) | int)
+            (flap_value | regex_findall('\\d+(?=day\\(s\\))') | first | default('0', true) | int)
           }}
           {% endif %}
       loop: "{{ interface_blocks }}"
 
     - name: Display days since last link flap per interface
       debug:
-        msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }} ({{ item.days_since_last_flap }} day(s))"
+        msg: "{{ item.interface }} last flapped {{ item.last_link_flapped }}{% if item.days_since_last_flap is number %} ({{ item.days_since_last_flap }} day(s)){% endif %}"
       loop: "{{ interface_flap_days }}"
       loop_control:
         label: "{{ item.interface }}"
