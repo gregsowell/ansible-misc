@@ -26,17 +26,25 @@
           - show interface
       register: interface_output
 
-    - name: Split interface output into per-interface blocks
+    - name: Build interface list from show interface output
       ansible.builtin.set_fact:
-        interface_blocks: >-
+        interface_list: >-
           {{
             (interface_output.stdout[0] | default('') | regex_replace('\\r', ''))
-            | regex_findall('(?ms)^\\s*\\S+ is .*?(?=^\\s*\\S+ is |\\Z)')
+            | regex_findall('(?m)^\\s*([A-Za-z-]+[0-9][A-Za-z0-9/.-]*) is (?:up|down)')
           }}
+
+    - name: Gather per-interface show output
+      when: interface_list | length > 0
+      cisco.nxos.nxos_command:
+        commands:
+          - "show interface {{ item }}"
+      loop: "{{ interface_list }}"
+      register: interface_detail
 
     - name: Add stale disconnected 1G interfaces to report
       when: 
-        - interface_blocks | length > 0
+        - interface_detail is defined
         - is_link_not_connected
         - is_one_gig
         - disconnected_days | int > stale_days_threshold | int
@@ -44,7 +52,7 @@
         - not is_uplink_interface
         - not is_uplink_description
       vars:
-        detail_text: "{{ item }}"
+        detail_text: "{{ item.stdout[0] | default('') }}"
         port_name: "{{ (detail_text | regex_findall('^\\s*(\\S+) is', multiline=True) | first | default('')) | trim }}"
         port_description: "{{ (detail_text | regex_findall('Description:\\s*(.+)') | first | default('')) | trim }}"
         last_link_flapped: "{{ (detail_text | regex_findall('Last link flapped\\s+(.+)') | first | default('never')) | lower | trim }}"
@@ -70,7 +78,7 @@
           {{ inventory_hostname }},{{ port_name }},{{ port_description | replace(',', ';') }},{{ last_link_flapped }},{{ disconnected_days | int }}
       ansible.builtin.include_role:
         name: ansible-report
-      loop: "{{ interface_blocks | default([]) }}"
+      loop: "{{ interface_detail.results | default([]) }}"
 
     - name: Check if report CSV exists
       run_once: true
