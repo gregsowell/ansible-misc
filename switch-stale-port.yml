@@ -26,16 +26,18 @@
           - show interface
       register: interface_output
 
-    - name: Debug show interface output
-      ansible.builtin.debug:
-        var: interface_output
+    # - name: Debug show interface output
+    #   ansible.builtin.debug:
+    #     var: interface_output
 
     - name: Build interface list from show interface output
       ansible.builtin.set_fact:
         interface_list: >-
           {{
-            (interface_output.stdout[0] | default('') | regex_replace('\\r', ''))
-            | regex_findall('(?m)^\\s*([A-Za-z-]+[0-9][A-Za-z0-9/.-]*) is (?:up|down)')
+            (interface_output.stdout_lines[0] | default([]))
+            | select('match', '^\\S+ is (up|down)')
+            | map('regex_replace', '^(\\S+) is (?:up|down).*$', '\\1')
+            | list
           }}
 
     - name: Gather per-interface show output
