@@ -27,9 +27,7 @@
         #   'last_link_flapped': flap_value,
         #   'days_since_last_flap': flap_days
         # } ] }}"
-        interface_flap_days: "{{ interface_flap_days | default([]) + [ {
-          flap_days
-        } ] }}"
+        interface_flap_days: "{{ interface_flap_days | default([]) + flap_days }}"
 
       vars:
         flap_value: "{{ (item.splitlines() | select('search', '^\\s*Last link flapped ') | first | default('Last link flapped unknown')) | regex_replace('^\\s*Last link flapped\\s*', '') }}"
