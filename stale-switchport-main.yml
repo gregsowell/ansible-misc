@@ -24,6 +24,12 @@
         } ] }}"
       loop: "{{ interface_blocks }}"
 
-    - name: Display parsed interface dictionaries
+    # - name: Display parsed interface dictionaries
+    #   debug:
+    #     var: interface_details
+
+    - name: Print out all interface names that are "Link not connected"
       debug:
-        var: interface_details
+        msg: "Interface {{ item.interface }} is Link not connected"
+      loop: "{{ interface_details }}"
+      when: "'Link not connected' in item.status_line"
