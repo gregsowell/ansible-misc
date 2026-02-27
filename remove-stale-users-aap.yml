@@ -73,7 +73,7 @@
     - name: Compute inactivity cutoff datetime (UTC) for 35 days
       ansible.builtin.set_fact:
         inactivity_days: 35
-        cutoff_dt_utc: "{{ (now(utc=true) | to_datetime) - timedelta(days=inactivity_days) }}"
+        cutoff_dt_utc: "{{ now(utc=true) - timedelta(days=inactivity_days) }}"
       changed_when: false
 
     - name: Initialize deletion list
