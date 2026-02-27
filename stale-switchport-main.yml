@@ -1,0 +1,19 @@
+---
+- name: Search for stale switchports and create a report
+  hosts: nexus9k3
+  gather_facts: false
+  vars:
+  tasks:
+    - name: Issue a show interfaces on the switch
+      nxos_command:
+        commands:
+          - show int
+      register: interface_status
+
+    - name: Create a list from interface_status that breaks when it sees "Ether * down" or "Ether * up"
+      set_fact:
+        stale_switchports: "{{ interface_status.stdout[0].splitlines() | select('match', 'Ether.*(down|up)') | list }}"
+    
+    - name: Display the list of stale switchports
+      debug:
+        var: stale_switchports
