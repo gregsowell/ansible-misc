@@ -5,7 +5,8 @@
   vars:
     csv_destination: "{{ playbook_dir }}/stale_switchports.csv"
     headers: host,interface
-    csv_lines[0]: "{{ headers }}"
+    csv_lines: 
+      - "{{ headers }}"
 
   tasks:
     - name: Issue a show interfaces on the switch
