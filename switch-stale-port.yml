@@ -26,6 +26,10 @@
           - show interface
       register: interface_output
 
+    - name: Debug show interface output
+      ansible.builtin.debug:
+        var: interface_output
+
     - name: Build interface list from show interface output
       ansible.builtin.set_fact:
         interface_list: >-
