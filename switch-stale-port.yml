@@ -1,0 +1,82 @@
+---
+- name: Collect stale disconnected 1Gbps switch ports
+  hosts: nexus9k3
+  gather_facts: false
+  vars:
+    stale_days_threshold: 60
+    uplink_interfaces: []
+    uplink_description_regex: '(?i)uplink|trunk|core'
+    reserved_description_regex: '(?i)^reserved$'
+    headers: switch,interface,description,last_input,disconnected_days
+    email_subject: Stale Switch Port Report
+    csv_path: /tmp
+    csv_filename: stale_switch_ports.csv
+
+  tasks:
+    - name: Get candidate disconnected interfaces from status table
+      cisco.nxox.nxos_command:
+        commands:
+          - show interfaces status | include notconnect
+      register: interface_status
+
+    - name: Build candidate interface list
+      ansible.builtin.set_fact:
+        candidate_interfaces: >-
+          {{
+            (interface_status.stdout[0] | default(''))
+            | regex_findall('^(\\S+)\\s+.*notconnect', multiline=True)
+          }}
+
+    - name: Gather detail for each candidate interface
+      when: candidate_interfaces | length > 0
+      cisco.nxox.nxos_command:
+        commands:
+          - "show interfaces {{ item }} | include line protocol|Description:|Last input|BW"
+      loop: "{{ candidate_interfaces }}"
+      register: interface_detail
+
+    - name: Add stale disconnected 1G interfaces to report
+      when: 
+        - interface_detail is defined
+        - is_one_gig
+        - is_down
+        - disconnected_days | int > stale_days_threshold | int
+        - not is_reserved
+        - not is_uplink_interface
+        - not is_uplink_description
+      vars:
+        detail_text: "{{ item.stdout[0] | default('') }}"
+        port_name: "{{ item.item }}"
+        port_description: "{{ (detail_text | regex_findall('Description:\\s*(.+)') | first | default('')) | trim }}"
+        last_input: "{{ (detail_text | regex_findall('Last input\\s+([^,]+),') | first | default('never')) | lower }}"
+        years_down: "{{ (last_input | regex_findall('(\\d+)y') | first | default(0)) | int }}"
+        weeks_down: "{{ (last_input | regex_findall('(\\d+)w') | first | default(0)) | int }}"
+        days_down: "{{ (last_input | regex_findall('(\\d+)d') | first | default(0)) | int }}"
+        hours_down: "{{ (last_input | regex_findall('(\\d+)h') | first | default(0)) | int }}"
+        mins_down: "{{ (last_input | regex_findall('(\\d+)m') | first | default(0)) | int }}"
+        disconnected_days: >-
+          {{
+          99999 if 'never' in last_input else
+          (years_down * 365) + (weeks_down * 7) + days_down +
+          ((hours_down / 24) | round(0, 'floor')) +
+          ((mins_down / 1440) | round(0, 'floor'))
+          }}
+        is_one_gig: "{{ detail_text is search('BW 1000000 Kbit') }}"
+        is_down: "{{ detail_text is search('line protocol is down') }}"
+        is_reserved: "{{ port_description is search(reserved_description_regex) }}"
+        is_uplink_interface: "{{ port_name in uplink_interfaces }}"
+        is_uplink_description: "{{ port_description is search(uplink_description_regex) }}"
+      ansible.builtin.include_role:
+      name: ansible-report
+      vars:
+      action_type: write
+      write_line: >-
+        {{ inventory_hostname }},{{ port_name }},{{ port_description | replace(',', ';') }},{{ last_input }},{{ disconnected_days | int }}
+      loop: "{{ interface_detail.results | default([]) }}"
+
+    # - name: Send stale-port report email
+    #   run_once: true
+    #   ansible.builtin.include_role:
+    #     name: ansible-report
+    #   vars:
+    #     action_type: email
