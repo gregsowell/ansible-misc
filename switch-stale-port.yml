@@ -30,9 +30,12 @@
     #   ansible.builtin.debug:
     #     var: interface_output
 
-    - name: Build interface list from show interface output
+    - name: Normalize show interface output text
       ansible.builtin.set_fact:
         interface_blob: "{{ interface_output.stdout[0] | default('') | regex_replace('\\r', '') }}"
+
+    - name: Build interface list from show interface output
+      ansible.builtin.set_fact:
         interface_list: >-
           {{
             interface_blob
