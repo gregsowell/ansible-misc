@@ -38,15 +38,93 @@
       loop: "{{ users_resp.json.results | default([]) }}"
       changed_when: false
 
-    - name: Show users (compact)
-      ansible.builtin.debug:
-        var: users_compact
+    # - name: Show users (compact)
+    #   ansible.builtin.debug:
+    #     var: users_compact
 
-    - name: Save users_compact to file
-      ansible.builtin.copy:
-        content: "{{ users_compact | to_nice_json }}"
-        dest: "{{ playbook_dir }}/aap_users_compact.json"
+    # - name: Save users_compact to file
+    #   ansible.builtin.copy:
+    #     content: "{{ users_compact | to_nice_json }}"
+    #     dest: "{{ playbook_dir }}/aap_users_compact.json"
 
-    - name: Show usernames only
+    # - name: Show usernames only
+    #   ansible.builtin.debug:
+    #     msg: "{{ users_compact | map(attribute='username') | list }}"
+
+    # - name: Set usernames to exclude from deletion (override with user_exclude_usernames)
+    #   ansible.builtin.set_fact:
+    #     excluded_usernames: >-
+    #       {{
+    #         (user_exclude_usernames | default([
+    #           'admin',
+    #           '_token_service_user'
+    #         ])) | unique
+    #       }}
+    #   changed_when: false
+
+    - name: Set usernames to exclude from deletion (override with user_exclude_usernames)
+      ansible.builtin.set_fact:
+        excluded_usernames: 
+          - admin
+          - _token_service_user
+      changed_when: false
+
+
+    - name: Compute inactivity cutoff datetime (UTC) for 35 days
+      ansible.builtin.set_fact:
+        inactivity_days: 35
+        cutoff_dt_utc: "{{ (now(utc=true) | to_datetime) - timedelta(days=inactivity_days) }}"
+      changed_when: false
+
+    - name: Initialize deletion list
+      ansible.builtin.set_fact:
+        users_to_delete: []
+      changed_when: false
+
+    - name: Build users_to_delete (never logged in OR inactive > 35 days), excluding usernames and superusers
+      ansible.builtin.set_fact:
+        users_to_delete: "{{ users_to_delete + [ item | combine({'_last_login_dt': last_login_dt}) ] }}"
+      vars:
+        last_login_raw: "{{ item.last_login }}"
+        last_login_dt: >-
+          {%- if last_login_raw is none or last_login_raw == '' -%}
+          {{ none }}
+          {%- elif (last_login_raw | string) is search('\\.') -%}
+          {{ last_login_raw | to_datetime('%Y-%m-%dT%H:%M:%S.%fZ') }}
+          {%- else -%}
+          {{ last_login_raw | to_datetime('%Y-%m-%dT%H:%M:%SZ') }}
+          {%- endif -%}
+      loop: "{{ users_compact }}"
+      loop_control:
+        label: "{{ item.username }}"
+      when:
+        - item.username not in excluded_usernames
+        - not (item.is_superuser | bool)   # safety: don't delete superusers
+        - last_login_dt is none or last_login_dt < cutoff_dt_utc
+      changed_when: false
+
+    - name: Show excluded usernames
       ansible.builtin.debug:
-        msg: "{{ users_compact | map(attribute='username') | list }}"
+        var: excluded_usernames
+
+    - name: Show users that will be deleted
+      ansible.builtin.debug:
+        msg:
+          cutoff_utc: "{{ cutoff_dt_utc }}"
+          delete_count: "{{ users_to_delete | length }}"
+          delete_users: "{{ users_to_delete | map(attribute='username') | list }}"
+
+    # - name: Delete selected users
+    #   ansible.builtin.uri:
+    #     url: "{{ (aap_users_url | regex_replace('/$', '')) }}/{{ item.id }}/"
+    #     method: DELETE
+    #     url_username: "{{ controller_username }}"
+    #     url_password: "{{ controller_password }}"
+    #     force_basic_auth: true
+    #     status_code: [204, 202, 200]
+    #     validate_certs: "{{ validate_certs }}"
+    #     headers:
+    #       Accept: "application/json"
+    #   loop: "{{ users_to_delete }}"
+    #   loop_control:
+    #     label: "{{ item.username }} (id={{ item.id }})"
