@@ -30,22 +30,22 @@
       ansible.builtin.set_fact:
         interface_blocks: >-
           {{
-            (interface_output.stdout[0] | default(''))
-            | regex_findall('(?ms)^\\S+ is .*?(?=^\\S+ is |\\Z)')
+            (interface_output.stdout[0] | default('') | regex_replace('\\r', ''))
+            | regex_findall('(?ms)^\\s*\\S+ is .*?(?=^\\s*\\S+ is |\\Z)')
           }}
 
     - name: Add stale disconnected 1G interfaces to report
       when: 
-        # - interface_blocks | length > 0
-        # - is_link_not_connected
-        # - is_one_gig
-        # - disconnected_days | int > stale_days_threshold | int
-        # - not is_reserved
-        # - not is_uplink_interface
-        # - not is_uplink_description
+        - interface_blocks | length > 0
+        - is_link_not_connected
+        - is_one_gig
+        - disconnected_days | int > stale_days_threshold | int
+        - not is_reserved
+        - not is_uplink_interface
+        - not is_uplink_description
       vars:
         detail_text: "{{ item }}"
-        port_name: "{{ (detail_text | regex_findall('^(\\S+) is', multiline=True) | first | default('')) | trim }}"
+        port_name: "{{ (detail_text | regex_findall('^\\s*(\\S+) is', multiline=True) | first | default('')) | trim }}"
         port_description: "{{ (detail_text | regex_findall('Description:\\s*(.+)') | first | default('')) | trim }}"
         last_link_flapped: "{{ (detail_text | regex_findall('Last link flapped\\s+(.+)') | first | default('never')) | lower | trim }}"
         years_down: "{{ (last_link_flapped | regex_findall('(\\d+)\\s*year\\(s\\)') | first | default(0)) | int }}"
@@ -79,13 +79,13 @@
         path: "{{ csv_path }}/{{ csv_filename }}"
       register: report_csv_stat
 
-    # - name: Send stale-port report email
-    #   run_once: true
-    #   when: report_csv_stat.stat.exists
-    #   ansible.builtin.include_role:
-    #     name: ansible-report
-    #   vars:
-    #     action_type: email
+    - name: Send stale-port report email
+      run_once: true
+      when: report_csv_stat.stat.exists
+      ansible.builtin.include_role:
+        name: ansible-report
+      vars:
+        action_type: email
 
     - name: Show when no stale ports were found
       run_once: true
