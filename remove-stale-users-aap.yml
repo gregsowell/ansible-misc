@@ -70,15 +70,14 @@
       changed_when: false
 
 
-    - name: Compute inactivity cutoff epoch (UTC) for 35 days
+    - name: Set inactivity window (days)
       ansible.builtin.set_fact:
         inactivity_days: 35
-        cutoff_epoch: >-
-          {{
-            (now(utc=true).timestamp() | int)
-            -
-            (inactivity_days * 86400)
-          }}
+      changed_when: false
+
+    - name: Compute inactivity cutoff epoch (UTC)
+      ansible.builtin.set_fact:
+        cutoff_epoch: "{{ (now(utc=true).timestamp() | int) - (inactivity_days | int * 86400) }}"
       changed_when: false
 
     - name: Initialize deletion list
