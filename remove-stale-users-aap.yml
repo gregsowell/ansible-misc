@@ -42,6 +42,11 @@
       ansible.builtin.debug:
         var: users_compact
 
+    - name: Save users_compact to file
+      ansible.builtin.copy:
+        content: "{{ users_compact | to_nice_json }}"
+        dest: "{{ script_dir }}/aap_users_compact.json"
+
     - name: Show usernames only
       ansible.builtin.debug:
         msg: "{{ users_compact | map(attribute='username') | list }}"
