@@ -69,3 +69,6 @@
     - name: Report backup summary
       debug:
         msg: "Backed up {{ all_job_templates | length }} job templates to {{ playbook_dir }}/{{ backup_directory }}"
+
+    - name: Issue quick command to show one of the backup files content
+      shell: "cat //runner/project/backup/job_templates/Check_Leapp_173.json"
