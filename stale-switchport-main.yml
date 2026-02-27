@@ -5,6 +5,7 @@
   vars:
     csv_destination: "{{ playbook_dir }}/stale_switchports.csv"
     headers: host,interface
+    csv_lines[0]: "{{ headers }}"
 
   tasks:
     - name: Issue a show interfaces on the switch
@@ -66,7 +67,7 @@
 
     - name: Create a big variable to write to the file at once
       set_fact:
-        csv_lines: "{{ csv_lines | default(headers) + [ inventory_hostname + ',' + item.splitlines()[0].split(' is ')[0] ] }}"
+        csv_lines: "{{ csv_lines  + [ inventory_hostname + ',' + item.splitlines()[0].split(' is ')[0] ] }}"
       loop: "{{ interface_blocks }}"
       when: 
         - "'Link not connected' in item" # Interface is down
