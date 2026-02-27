@@ -9,6 +9,17 @@
     page_size: 200
     controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
     controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
+    # How many days of inactivity before a user is considered stale and eligible for deletion?
+    inactivity_days: 35
+    # Usernames to exclude from deletion.
+    excluded_usernames: 
+      - admin
+      - _token_service_user
+    # Initialize the users delete variable
+    users_to_delete: []
+
+    do_delete: false  # Set to true to actually delete users. Default is false for safety.
+
 
   tasks:
     - name: Get users
@@ -51,38 +62,9 @@
     #   ansible.builtin.debug:
     #     msg: "{{ users_compact | map(attribute='username') | list }}"
 
-    # - name: Set usernames to exclude from deletion (override with user_exclude_usernames)
-    #   ansible.builtin.set_fact:
-    #     excluded_usernames: >-
-    #       {{
-    #         (user_exclude_usernames | default([
-    #           'admin',
-    #           '_token_service_user'
-    #         ])) | unique
-    #       }}
-    #   changed_when: false
-
-    - name: Set usernames to exclude from deletion (override with user_exclude_usernames)
-      ansible.builtin.set_fact:
-        excluded_usernames: 
-          - admin
-          - _token_service_user
-      changed_when: false
-
-
-    - name: Set inactivity window (days)
-      ansible.builtin.set_fact:
-        inactivity_days: 35
-      changed_when: false
-
     - name: Compute inactivity cutoff epoch (UTC)
       ansible.builtin.set_fact:
         cutoff_epoch: "{{ (now(utc=true).timestamp() | int) - (inactivity_days | int * 86400) }}"
-      changed_when: false
-
-    - name: Initialize deletion list
-      ansible.builtin.set_fact:
-        users_to_delete: []
       changed_when: false
 
     - name: Build users_to_delete (never logged in OR inactive > 35 days)
