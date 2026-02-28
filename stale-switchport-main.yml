@@ -91,7 +91,7 @@
         flap_days: "{{ 0 if flap_value in ['never', 'unknown'] else ((flap_weeks | int * 7) + (flap_day_count | int)) }}"
       loop: "{{ interface_blocks }}"
       when: 
-        - flap_days | int > 20 # checking to see if it's been down long enough
+        - flap_days | int > days_down | int # checking to see if it's been down long enough
         # - "'Link not connected' in item" # Interface is down
         - "'Port mode is access' in item" # Interface is not a trunk
         - "'Reserved' not in item" # Interface is not reserved
