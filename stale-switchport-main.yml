@@ -92,10 +92,10 @@
       loop: "{{ interface_blocks }}"
       when: 
         - flap_days | int > days_down | int # checking to see if it's been down long enough
-        # - "'Link not connected' in item" # Interface is down
+        - "'Link not connected' in item" # Interface is down
         - "'Port mode is access' in item" # Interface is not a trunk
         - "'Reserved' not in item" # Interface is not reserved
-        # - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
+        - "'BW 1000000' in item" # Interface is 1G, not 10G or higher
 
     # - name: Create a big variable to write to the file at once
     #   set_fact:
