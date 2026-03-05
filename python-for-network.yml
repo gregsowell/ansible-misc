@@ -4,7 +4,8 @@
   gather_facts: no
   tasks:
     - name: Run a python script to show the hostname of a device
-      ansible.builtin.shell: "python python-for-network.py --host {{ ansible_host }} --username {{ ansible_user }} --password {{ ansible_password }}"
+      # ansible.builtin.shell: "python python-for-network.py --host {{ ansible_host }} --username {{ ansible_user }} --password {{ ansible_password }}"
+      ansible.builtin.shell: "/usr/bin/python3.11 python-for-network.py --host {{ ansible_host }} --username {{ ansible_user }} --password {{ ansible_password }}"
       register: hostname_output
       delegate_to: localhost
 
