@@ -9,12 +9,13 @@
       register: hostname_output
       delegate_to: localhost
       no_log: true
+      changed_when: false
 
     # - name: Display the hostname output
     #   ansible.builtin.debug:
     #     var: hostname_output.stdout
 
-    - name: Display the hostname output
+    - name: Display the hostname output if the description isn't null
       when: item.description is not none
       ansible.builtin.debug:
         msg: "interface {{ item.interface }} has description {{ item.description }}"
