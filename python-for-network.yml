@@ -11,4 +11,4 @@
 
     - name: Display the hostname output
       ansible.builtin.debug:
-        var: hostname_output.stdout
+        var: hostname_output.stdout | to_nice_yaml
