@@ -1,6 +1,6 @@
 ---
 - name: Quick demo showing running python scripts against network devices
-  hosts: nexus
+  hosts: nexus9k3
   gather_facts: no
   tasks:
     - name: Run a python script to show the hostname of a device
