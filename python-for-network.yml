@@ -9,11 +9,12 @@
       register: hostname_output
       delegate_to: localhost
 
-    - name: Display the hostname output
-      ansible.builtin.debug:
-        var: hostname_output.stdout
+    # - name: Display the hostname output
+    #   ansible.builtin.debug:
+    #     var: hostname_output.stdout
 
     - name: Display the hostname output
+      when: item.description != "null"
       ansible.builtin.debug:
-        var: item
+        msg: "interface {{ item.interface }} has description {{ item.description }}"
       loop: "{{ hostname_output.stdout | from_json }}"
