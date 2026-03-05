@@ -2,39 +2,49 @@
 
 import json
 import argparse
-from netmiko import ConnectHandler
+import paramiko
+
+
+def run_command(host, username, password, command):
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    client.connect(
+        hostname=host,
+        username=username,
+        password=password,
+        look_for_keys=False,
+        allow_agent=False
+    )
+
+    stdin, stdout, stderr = client.exec_command(command)
+
+    output = stdout.read().decode()
+    client.close()
+
+    return output
 
 
 def get_interfaces(host, username, password):
 
-    device = {
-        "device_type": "cisco_nxos",
-        "host": host,
-        "username": username,
-        "password": password,
-    }
-
-    conn = ConnectHandler(**device)
-
-    output = conn.send_command("show interface description | json")
+    command = "show interface description | json"
+    output = run_command(host, username, password, command)
 
     data = json.loads(output)
 
-    interfaces = []
-
     rows = data["TABLE_interface"]["ROW_interface"]
 
-    # Handle case where only one interface is returned
     if isinstance(rows, dict):
         rows = [rows]
 
-    for intf in rows:
-        interfaces.append({
-            "interface": intf.get("interface"),
-            "description": intf.get("desc")
-        })
+    interfaces = []
 
-    conn.disconnect()
+    for i in rows:
+        interfaces.append({
+            "interface": i.get("interface"),
+            "description": i.get("desc")
+        })
 
     return interfaces
 
@@ -51,7 +61,11 @@ def main():
 
     args = parser.parse_args()
 
-    interfaces = get_interfaces(args.host, args.username, args.password)
+    interfaces = get_interfaces(
+        args.host,
+        args.username,
+        args.password
+    )
 
     print(json.dumps(interfaces, indent=2))
 
