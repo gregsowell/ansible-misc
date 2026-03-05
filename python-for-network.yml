@@ -11,4 +11,9 @@
 
     - name: Display the hostname output
       ansible.builtin.debug:
-        var: hostname_output.stdout | to_nice_yaml
+        var: hostname_output.stdout
+
+    - name: Display the hostname output
+      ansible.builtin.debug:
+        var: item
+      loop: "{{ hostname_output.stdout | from_json }}"
