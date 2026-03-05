@@ -1,0 +1,13 @@
+---
+- name: Quick demo showing running python scripts against network devices
+  hosts: nexus9k3
+  gather_facts: no
+  tasks:
+    - name: Run a python script to show the hostname of a device
+      ansible.builtin.shell: "python python-for-network.py --host {{ ansible_host }} --username {{ ansible_user }} --password {{ ansible_password }}"
+      register: hostname_output
+      delegate_to: localhost
+
+    - name: Display the hostname output
+      ansible.builtin.debug:
+        var: hostname_output.stdout
