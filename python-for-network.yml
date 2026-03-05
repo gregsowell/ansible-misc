@@ -14,7 +14,7 @@
     #     var: hostname_output.stdout
 
     - name: Display the hostname output
-      when: item.description != "null"
+      when: item.description is not none
       ansible.builtin.debug:
         msg: "interface {{ item.interface }} has description {{ item.description }}"
       loop: "{{ hostname_output.stdout | from_json }}"
