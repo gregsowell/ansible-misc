@@ -1,0 +1,56 @@
+---
+- name: List all job templates with their execution environments
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+    controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
+    controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
+    validate_certs: false
+    page_size: 200
+    all_templates: []
+
+  tasks:
+    - name: Fetch first page of job templates
+      ansible.builtin.uri:
+        url: "{{ controller_host }}/api/v2/job_templates/?page_size={{ page_size }}"
+        method: GET
+        url_username: "{{ controller_username }}"
+        url_password: "{{ controller_password }}"
+        force_basic_auth: true
+        validate_certs: "{{ validate_certs }}"
+        return_content: true
+        status_code: 200
+        headers:
+          Accept: "application/json"
+      register: templates_resp
+      changed_when: false
+
+    - name: Store first page results and next URL
+      ansible.builtin.set_fact:
+        all_templates: "{{ templates_resp.json.results | default([]) }}"
+        next_url: "{{ templates_resp.json.next | default(None) }}"
+
+    - name: Paginate remaining job templates
+      ansible.builtin.include_tasks: _paginate_job_templates.yml
+      when: next_url is not none
+
+    - name: Build template and execution environment list
+      ansible.builtin.set_fact:
+        template_ee_list: "{{ template_ee_list | default([]) + [{
+          'template_name': item.name,
+          'template_id': item.id,
+          'execution_environment': item.summary_fields.execution_environment.name | default('Default (not set)')
+        }] }}"
+      loop: "{{ all_templates }}"
+      loop_control:
+        label: "{{ item.name }}"
+      changed_when: false
+
+    - name: Display job templates and execution environments
+      ansible.builtin.debug:
+        msg: "Template: {{ item.template_name }} | EE: {{ item.execution_environment }}"
+      loop: "{{ template_ee_list }}"
+      loop_control:
+        label: "{{ item.template_name }}"
