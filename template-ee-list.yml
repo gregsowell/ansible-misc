@@ -31,11 +31,11 @@
     - name: Store first page results and next URL
       ansible.builtin.set_fact:
         all_templates: "{{ templates_resp.json.results | default([]) }}"
-        next_url: "{{ templates_resp.json.next | default(None) }}"
+        next_url: "{{ templates_resp.json.next | default('', true) }}"
 
     - name: Paginate remaining job templates
       ansible.builtin.include_tasks: _paginate_job_templates.yml
-      when: next_url is not none
+      when: next_url | length > 0
 
     - name: Build template and execution environment list
       ansible.builtin.set_fact:
