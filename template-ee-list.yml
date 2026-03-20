@@ -14,7 +14,8 @@
   tasks:
     - name: Fetch first page of job templates
       ansible.builtin.uri:
-        url: "{{ controller_host }}/api/v2/job_templates/?page_size={{ page_size }}"
+        url: "{{ controller_host }}/api/controller/v2/job_templates/?page_size={{ page_size }}"
+        # url: "{{ controller_host }}/api/v2/job_templates/?page_size={{ page_size }}"
         method: GET
         url_username: "{{ controller_username }}"
         url_password: "{{ controller_password }}"
