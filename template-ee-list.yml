@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+    controller_host: "https://{{ lookup('env', 'CONTROLLER_HOST') }}"
     controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
     controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
     validate_certs: false
