@@ -1,7 +1,7 @@
 ---
 - name: Fetch next page of job templates
   ansible.builtin.uri:
-    url: "{{ next_url }}"
+    url: "{{ next_url if next_url.startswith('http') else controller_host ~ next_url }}"
     method: GET
     url_username: "{{ controller_username }}"
     url_password: "{{ controller_password }}"
