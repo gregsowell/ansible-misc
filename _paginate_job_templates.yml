@@ -17,8 +17,8 @@
 - name: Accumulate results and advance pagination
   ansible.builtin.set_fact:
     all_templates: "{{ all_templates + (page.json.results | default([])) }}"
-    next_url: "{{ page.json.next if (page.json.next is not none) else none }}"
+    next_url: "{{ page.json.next | default('', true) }}"
 
 - name: Keep paging while there is a next URL
   ansible.builtin.include_tasks: _paginate_job_templates.yml
-  when: next_url is not none
+  when: next_url | length > 0
