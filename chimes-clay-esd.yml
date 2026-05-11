@@ -1,5 +1,5 @@
 ---
-- name: Chimes Clay site 1 emergency shutdown procedures
+- name: Chimes Clay site 1 emergency shutdown procedures.
   hosts: Greg-rocky9
   gather_facts: false
   vars:
