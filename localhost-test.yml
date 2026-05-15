@@ -1,0 +1,8 @@
+---
+- name: Quick localhost test for 2.6
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Check Ansible version
+      ansible.builtin.debug:
+        msg: "Hello world"
